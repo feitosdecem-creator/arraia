@@ -1,0 +1,63 @@
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function main() {
+  console.log('Seeding database...')
+
+  // Clean up existing data
+  await prisma.ticket.deleteMany()
+  await prisma.orderItem.deleteMany()
+  await prisma.order.deleteMany()
+  await prisma.ticketType.deleteMany()
+  await prisma.event.deleteMany()
+
+  const event = await prisma.event.create({
+    data: {
+      name: 'Arraiá da Escola 2025',
+      description:
+        'O maior arraiá da cidade! Venha curtir forró, quadrilha, comidas típicas e muito mais. Uma noite inesquecível para toda a família.',
+      date: new Date('2025-06-21T18:00:00-03:00'),
+      location: 'Pátio da Escola',
+      isActive: true,
+      ticketTypes: {
+        create: [
+          {
+            name: 'Inteira',
+            description: 'Ingresso inteiro com acesso a todas as atrações',
+            price: 3000,
+            stock: 200,
+            sortOrder: 0,
+          },
+          {
+            name: 'Meia-Entrada',
+            description:
+              'Estudantes, idosos e pessoas com deficiência (apresentar documento)',
+            price: 1500,
+            stock: 100,
+            sortOrder: 1,
+          },
+          {
+            name: 'Criança (até 10 anos)',
+            description: 'Para crianças de até 10 anos',
+            price: 1000,
+            stock: 150,
+            sortOrder: 2,
+          },
+        ],
+      },
+    },
+  })
+
+  console.log(`Created event: ${event.name}`)
+  console.log('Seeding complete!')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
