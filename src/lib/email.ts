@@ -4,7 +4,10 @@ import { generateQrCode } from '@/lib/qrcode'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  if (!process.env.RESEND_API_KEY) throw new Error('Missing RESEND_API_KEY')
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 export async function sendTicketEmail(orderId: string): Promise<void> {
   const order = await prisma.order.findUnique({
@@ -70,6 +73,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
     currency: 'BRL',
   })
 
+  const resend = getResend()
   await resend.emails.send({
     from: 'Arraiá da Escola <ingressos@arraia.escola.com>',
     to: order.user.email,

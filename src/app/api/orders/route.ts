@@ -1,0 +1,126 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { createPixPayment } from '@/lib/mercadopago'
+import { z } from 'zod'
+
+const schema = z.object({
+  items: z
+    .array(
+      z.object({
+        ticketTypeId: z.string(),
+        quantity: z.number().int().positive().max(10),
+      })
+    )
+    .min(1),
+})
+
+export async function POST(req: NextRequest) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  try {
+    const body = await req.json()
+    const parsed = schema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
+    }
+
+    const { items } = parsed.data
+
+    // Get ticket type prices
+    const ticketTypes = await prisma.ticketType.findMany({
+      where: {
+        id: { in: items.map((i) => i.ticketTypeId) },
+        isActive: true,
+      },
+    })
+
+    if (ticketTypes.length !== items.length) {
+      return NextResponse.json({ error: 'Tipo de ingresso inválido' }, { status: 400 })
+    }
+
+    const totalAmount = items.reduce((sum, item) => {
+      const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!
+      return sum + tt.price * item.quantity
+    }, 0)
+
+    // Create order and update stock atomically
+    const order = await prisma.$transaction(async (tx) => {
+      // Check and decrement stock for each item
+      for (const item of items) {
+        const result = await tx.$executeRaw`
+          UPDATE ticket_types
+          SET sold = sold + ${item.quantity}
+          WHERE id = ${item.ticketTypeId} AND sold + ${item.quantity} <= stock
+        `
+        if (result === 0) {
+          throw new Error('SOLD_OUT')
+        }
+      }
+
+      // Create order
+      const newOrder = await tx.order.create({
+        data: {
+          userId: session.user.id,
+          status: 'PENDING',
+          totalAmount,
+          items: {
+            create: items.map((item) => {
+              const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!
+              return {
+                ticketTypeId: item.ticketTypeId,
+                quantity: item.quantity,
+                unitPrice: tt.price,
+              }
+            }),
+          },
+        },
+      })
+
+      return newOrder
+    })
+
+    // Create PIX payment
+    let pixData
+    try {
+      pixData = await createPixPayment({
+        orderId: order.id,
+        amount: totalAmount,
+        payerEmail: session.user.email,
+        payerName: session.user.name,
+      })
+    } catch {
+      // Update order to cancelled if PIX fails
+      await prisma.order.update({ where: { id: order.id }, data: { status: 'CANCELLED' } })
+      return NextResponse.json({ error: 'Erro ao gerar PIX' }, { status: 502 })
+    }
+
+    // Update order with PIX data
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status: 'AWAITING_PAYMENT',
+        mercadoPagoId: pixData.paymentId,
+        pixQrCode: pixData.qrCodeBase64,
+        pixQrCodeText: pixData.qrCodeText,
+        pixExpiresAt: pixData.expiresAt,
+      },
+    })
+
+    return NextResponse.json({
+      orderId: order.id,
+      pixQrCode: pixData.qrCodeBase64,
+      pixQrCodeText: pixData.qrCodeText,
+      expiresAt: pixData.expiresAt,
+    })
+  } catch (err) {
+    if (err instanceof Error && err.message === 'SOLD_OUT') {
+      return NextResponse.json({ error: 'Ingressos esgotados' }, { status: 409 })
+    }
+    console.error('Order error:', err)
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+  }
+}
