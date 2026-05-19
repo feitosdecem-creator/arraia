@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { nanoid } from 'nanoid'
@@ -8,9 +9,40 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
 })
 
+function validateSignature(req: NextRequest, rawBody: string): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
+  if (!secret) return false
+
+  const xSignature = req.headers.get('x-signature') ?? ''
+  const xRequestId = req.headers.get('x-request-id') ?? ''
+  const dataId = new URL(req.url).searchParams.get('data.id') ?? ''
+
+  const parts = Object.fromEntries(
+    xSignature.split(',').map((p) => p.trim().split('=') as [string, string])
+  )
+  const ts = parts['ts']
+  const v1 = parts['v1']
+  if (!ts || !v1) return false
+
+  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`
+  const expected = createHmac('sha256', secret).update(manifest).digest('hex')
+
+  try {
+    return timingSafeEqual(Buffer.from(v1, 'hex'), Buffer.from(expected, 'hex'))
+  } catch {
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const rawBody = await req.text()
+
+    if (!validateSignature(req, rawBody)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = JSON.parse(rawBody)
     const { type, data } = body
 
     if (type !== 'payment') {
