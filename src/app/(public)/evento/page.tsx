@@ -133,52 +133,69 @@ export default async function EventoPage() {
           </div>
         </div>
 
-        {/* ── 1º Lote banner ── */}
-        <div style={{ marginBottom: 32, borderRadius: 20, overflow: 'hidden', border: '1.5px solid #f5c84a', boxShadow: '0 4px 24px rgba(245,184,50,0.18)' }}>
+        {/* ── Pricing section ── */}
+        <section style={{ marginBottom: 44 }}>
 
-          {/* Header strip */}
-          <div style={{ background: 'linear-gradient(90deg, #f5a100 0%, #f5c84a 100%)', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 16 }}>🎟</span>
-            <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#3d2400' }}>
-              1º Lote — Preços especiais
-            </span>
-            <span style={{ marginLeft: 'auto', background: 'rgba(61,36,0,0.15)', borderRadius: 999, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#3d2400', letterSpacing: '0.06em' }}>
-              Preço de lançamento
-            </span>
+          {/* Section header */}
+          <div className="pricing-header">
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 12, padding: '4px 11px', borderRadius: 999, background: 'rgba(194,120,10,0.08)', border: '1px solid rgba(194,120,10,0.16)' }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c2780a', display: 'inline-block', flexShrink: 0 }} />
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#a16207' }}>1º Lote</span>
+              </div>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--fg-1)', margin: 0, lineHeight: 1.1 }}>
+                Ingressos disponíveis
+              </h2>
+              <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: '8px 0 0', lineHeight: 1.5 }}>
+                Garanta sua vaga — sexta, 19 de junho · 18h30
+              </p>
+            </div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 14px', borderRadius: 999, background: 'rgba(194,120,10,0.07)', border: '1px solid rgba(194,120,10,0.15)', flexShrink: 0 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e', letterSpacing: '-0.01em' }}>Preço promocional</span>
+            </div>
           </div>
 
-          {/* Prices row */}
-          <div style={{ background: '#fffdf5', padding: '20px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {/* Price cards */}
+          <div className="pricing-cards-grid">
 
             {/* Inteira */}
-            <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px', border: '1.5px solid #fde68a', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#92700a' }}>Inteira</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#92700a' }}>R$</span>
-                <span style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.03em', color: '#1a1512', lineHeight: 1 }}>18</span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#92700a', marginBottom: 2 }}>,00</span>
+            <a href="#ingressos" className="pricing-card pricing-card-primary">
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '-0.01em' }}>Inteira</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: '14px 0 6px' }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-3)', lineHeight: 1, paddingBottom: 6 }}>R$</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 54, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>18</span>
               </div>
-            </div>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 auto', lineHeight: 1.55, paddingBottom: 20 }}>
+                Acesso completo ao evento
+              </p>
+              <div className="pricing-btn pricing-btn-primary">Selecionar →</div>
+            </a>
 
-            {/* Meia-Entrada */}
-            <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px', border: '1.5px solid #fde68a', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#92700a' }}>Meia-Entrada</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#92700a' }}>R$</span>
-                <span style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.03em', color: '#1a1512', lineHeight: 1 }}>10</span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#92700a', marginBottom: 2 }}>,00</span>
+            {/* Meia-entrada */}
+            <a href="#ingressos" className="pricing-card">
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '-0.01em' }}>Meia-entrada</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: '14px 0 6px' }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-3)', lineHeight: 1, paddingBottom: 6 }}>R$</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 54, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>10</span>
               </div>
-            </div>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 auto', lineHeight: 1.55, paddingBottom: 20 }}>
+                Válido mediante comprovação
+              </p>
+              <div className="pricing-btn pricing-btn-ghost">Selecionar →</div>
+            </a>
           </div>
 
-          {/* Free kids notice */}
-          <div style={{ background: '#f0f9e8', borderTop: '1px solid #c6e6a0', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18, flexShrink: 0 }}>🌟</span>
-            <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#2d5a14', lineHeight: 1.4 }}>
-              Crianças alunas do <strong>Quintal Escola Feitos de Cem</strong> não pagam ingresso — entrada gratuita para os pequenos da escola!
+          {/* Student notice */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 18px', background: 'rgba(74,138,56,0.05)', borderRadius: 14, border: '1px solid rgba(74,138,56,0.13)' }}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+              <circle cx="9" cy="9" r="9" fill="rgba(74,138,56,0.14)" />
+              <path d="M5.5 9l2.5 2.5 5-5" stroke="#3a7527" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p style={{ margin: 0, fontSize: 13, color: '#2d5a1a', lineHeight: 1.6 }}>
+              Alunos da <strong>Quintal Escola Feitos de Cem</strong> têm entrada gratuita — não é necessário adquirir ingresso.
             </p>
           </div>
-        </div>
+        </section>
 
         {/* Main 2-col layout */}
         <div
@@ -273,7 +290,7 @@ export default async function EventoPage() {
           </div>
 
           {/* Right — tickets sticky */}
-          <div className="evento-tickets" style={{ position: 'sticky', top: 24 }}>
+          <div id="ingressos" className="evento-tickets" style={{ position: 'sticky', top: 24 }}>
             <div
               className="fdc-card"
               style={{ padding: 24 }}
