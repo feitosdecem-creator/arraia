@@ -3,7 +3,7 @@ import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 
 export const metadata: Metadata = {
-  title: 'Arraiá da Escola 2025',
+  title: 'Arraiá nu Quintal 2',
   description: 'Compre seus ingressos para o maior arraiá da cidade!',
 }
 

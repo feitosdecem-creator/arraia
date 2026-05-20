@@ -22,7 +22,7 @@ export async function createPixPayment(params: {
   const result = await payment.create({
     body: {
       transaction_amount: amountInReais,
-      description: `Ingressos Arraiá da Escola - Pedido ${params.orderId}`,
+      description: `Ingressos Arraiá nu Quintal 2 - Pedido ${params.orderId}`,
       payment_method_id: 'pix',
       external_reference: params.orderId,
       payer: {

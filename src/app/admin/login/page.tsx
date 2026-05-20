@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🎪</div>
           <h1 className="text-2xl font-extrabold text-amber-900">Área Administrativa</h1>
-          <p className="text-gray-500 text-sm mt-1">Arraiá da Escola 2025</p>
+          <p className="text-gray-500 text-sm mt-1">Arraiá nu Quintal 2</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

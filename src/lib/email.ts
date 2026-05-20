@@ -75,7 +75,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
 
   const resend = getResend()
   await resend.emails.send({
-    from: 'Arraiá da Escola <ingressos@arraia.escola.com>',
+    from: 'Arraiá nu Quintal 2 <ingressos@arraia.escola.com>',
     to: order.user.email,
     subject: `Seus ingressos - ${event.name}`,
     html: `
@@ -87,7 +87,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
       </head>
       <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9fafb;">
         <div style="background: linear-gradient(135deg, #f59e0b, #dc2626); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: white; margin: 0; font-size: 28px;">🎪 Arraiá da Escola</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px;">🎪 Arraiá nu Quintal 2</h1>
           <p style="color: #fef3c7; margin: 8px 0 0 0;">Seus ingressos chegaram!</p>
         </div>
 
@@ -104,7 +104,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
 
         <div style="text-align: center; margin-top: 24px; color: #9ca3af; font-size: 12px;">
           <p>Apresente o QR Code na entrada do evento.</p>
-          <p>Arraiá da Escola 2025</p>
+          <p>Arraiá nu Quintal 2</p>
         </div>
       </body>
       </html>

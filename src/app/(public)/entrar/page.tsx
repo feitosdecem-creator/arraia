@@ -226,7 +226,7 @@ export default function EntrarPage() {
             <div style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--fdc-tangerine)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, fontSize: 18 }}>
               A
             </div>
-            <span style={{ fontWeight: 700, fontSize: 17, color: 'var(--fg-1)' }}>Arraiá da Escola</span>
+            <span style={{ fontWeight: 700, fontSize: 17, color: 'var(--fg-1)' }}>Arraiá nu Quintal 2</span>
           </Link>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--fg-1)', margin: '20px 0 6px' }}>
             Acesse sua conta

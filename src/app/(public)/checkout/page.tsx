@@ -293,7 +293,7 @@ function OrderSummary({ items, total }: { items: ReturnType<typeof useCart>['ite
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 14, borderBottom: '1px solid var(--line-2)', marginBottom: 14 }}>
           <div style={{ width: 52, height: 52, borderRadius: 10, background: 'linear-gradient(135deg, var(--fdc-tangerine-soft), var(--fdc-cream-deep))', flexShrink: 0 }} />
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.2, color: 'var(--fg-1)' }}>Arraiá da Escola</div>
+            <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.2, color: 'var(--fg-1)' }}>Arraiá nu Quintal 2</div>
             <div style={{ fontSize: 13, color: 'var(--fg-2)', marginTop: 2 }}>Seus ingressos</div>
           </div>
         </div>

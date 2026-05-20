@@ -53,7 +53,7 @@ function Footer() {
               margin: 0,
             }}
           >
-            Arraiá da Escola 2026 · Pátio da Escola
+            Arraiá nu Quintal 2 · Pátio da Escola
           </p>
         </div>
 
@@ -129,7 +129,7 @@ function Footer() {
           textAlign: 'center',
         }}
       >
-        © 2026 Arraiá da Escola · Todos os direitos reservados
+        © 2026 Arraiá nu Quintal 2 · Todos os direitos reservados
       </div>
     </footer>
   )

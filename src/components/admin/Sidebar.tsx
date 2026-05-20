@@ -61,7 +61,7 @@ export function Sidebar() {
           <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.1 }}>
             Admin
           </div>
-          <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>Arraiá da Escola</div>
+          <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>Arraiá nu Quintal 2</div>
         </div>
       </div>
 
