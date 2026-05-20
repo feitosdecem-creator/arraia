@@ -204,7 +204,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
             >
               PIX copia e cola
             </label>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="pix-copy-row" style={{ display: 'flex', gap: 8 }}>
               <code
                 style={{
                   flex: 1,

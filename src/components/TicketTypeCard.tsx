@@ -208,32 +208,45 @@ export function CartCheckoutBar() {
         boxShadow: '0 -4px 20px rgba(56,48,48,0.08)',
       }}
     >
-      <div>
-        <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>
-          {itemCount} {itemCount === 1 ? 'ingresso' : 'ingressos'}
-        </div>
-        <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em' }}>
-          {totalFormatted}
-        </div>
-      </div>
-      <Link
-        href="/checkout"
+      <div
+        className="cart-checkout-bar-inner"
         style={{
-          display: 'inline-flex',
+          display: 'flex',
           alignItems: 'center',
-          gap: 8,
-          padding: '13px 28px',
-          borderRadius: 'var(--radius-lg)',
-          background: 'var(--fdc-tangerine)',
-          color: 'var(--fdc-cream)',
-          fontWeight: 700,
-          fontSize: 16,
-          textDecoration: 'none',
-          boxShadow: 'var(--shadow-md)',
+          justifyContent: 'center',
+          gap: 16,
+          width: '100%',
+          maxWidth: 600,
         }}
       >
-        Continuar para pagamento →
-      </Link>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>
+            {itemCount} {itemCount === 1 ? 'ingresso' : 'ingressos'}
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em' }}>
+            {totalFormatted}
+          </div>
+        </div>
+        <Link
+          href="/checkout"
+          className="cart-checkout-btn"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '13px 28px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'var(--fdc-tangerine)',
+            color: 'var(--fdc-cream)',
+            fontWeight: 700,
+            fontSize: 16,
+            textDecoration: 'none',
+            boxShadow: 'var(--shadow-md)',
+          }}
+        >
+          Continuar para pagamento →
+        </Link>
+      </div>
     </div>
   )
 }

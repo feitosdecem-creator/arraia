@@ -334,6 +334,7 @@ export default function CheckoutPage() {
                 </div>
               ) : (
                 <div
+                  className="checkout-form-grid"
                   style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
@@ -428,6 +429,7 @@ export default function CheckoutPage() {
 
             {/* Actions */}
             <div
+              className="checkout-actions"
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -459,6 +461,7 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleOrder}
                   disabled={loading}
+                  className="checkout-btn-proceed"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -480,6 +483,7 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleAuthSubmit as unknown as React.MouseEventHandler}
                   disabled={loading}
+                  className="checkout-btn-proceed"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',

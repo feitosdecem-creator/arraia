@@ -60,7 +60,7 @@ export default async function EventoPage() {
             padding: '40px 40px 36px',
             position: 'relative',
           }}
-          className="fdc-grain"
+          className="fdc-grain evento-hero"
         >
           <div
             aria-hidden
@@ -180,6 +180,7 @@ export default async function EventoPage() {
                 O que está incluso
               </div>
               <div
+                className="evento-inclusions-grid"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',

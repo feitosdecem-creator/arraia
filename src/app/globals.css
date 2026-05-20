@@ -425,6 +425,7 @@ img, video, svg {
   }
   .evento-hero {
     padding: 28px 20px 24px !important;
+    min-height: 220px !important;
   }
   .evento-inclusions-grid {
     grid-template-columns: 1fr !important;
@@ -465,6 +466,7 @@ img, video, svg {
   .pix-qr {
     border-right: none !important;
     border-bottom: 1px solid var(--line-2);
+    padding: 24px !important;
   }
   .pix-copy-row {
     flex-direction: column !important;
@@ -473,6 +475,7 @@ img, video, svg {
     width: 100% !important;
     justify-content: center !important;
     padding: 11px 16px !important;
+    min-height: 44px !important;
   }
 
   /* Admin dashboard metrics */
@@ -489,11 +492,12 @@ img, video, svg {
     min-height: auto !important;
     border-right: none !important;
     border-bottom: 1px solid var(--line-2) !important;
-    padding: 12px 8px !important;
+    padding: 10px 8px !important;
     flex-direction: row !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
   .admin-sidebar-brand {
     display: none !important;
@@ -509,6 +513,9 @@ img, video, svg {
     white-space: nowrap !important;
     padding: 8px 10px !important;
     font-size: 13px !important;
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
   }
   .admin-sidebar-logout {
     display: none !important;
@@ -516,6 +523,7 @@ img, video, svg {
   .admin-main {
     padding: 16px !important;
     overflow: auto !important;
+    min-width: 0 !important;
   }
 
   /* Admin tables — scrollable wrappers */
@@ -540,15 +548,46 @@ img, video, svg {
   }
   .navbar-nav {
     gap: 0 !important;
+    overflow-x: auto !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
   }
   .navbar-nav-link {
     padding: 6px 8px !important;
     font-size: 13px !important;
+    white-space: nowrap !important;
   }
   .navbar-auth {
     gap: 4px !important;
+    flex-shrink: 0 !important;
   }
   .navbar-auth-label {
     display: none !important;
+  }
+  .navbar-cta {
+    white-space: nowrap !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+  .navbar-brand-label {
+    display: none !important;
+  }
+
+  /* Cart checkout bar — stack on very small screens */
+  .cart-checkout-bar-inner {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+  .cart-checkout-bar-inner .cart-checkout-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
   }
 }

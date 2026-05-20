@@ -19,6 +19,7 @@ export function Navbar() {
       }}
     >
       <div
+        className="navbar-inner"
         style={{
           maxWidth: 'var(--container-max)',
           margin: '0 auto',
@@ -39,6 +40,7 @@ export function Navbar() {
             gap: 10,
             textDecoration: 'none',
             color: 'var(--fg-1)',
+            flexShrink: 0,
           }}
         >
           <div
@@ -56,13 +58,14 @@ export function Navbar() {
           >
             A
           </div>
-          <span style={{ fontWeight: 600, fontSize: 15 }}>ingressos.app</span>
+          <span className="navbar-brand-label" style={{ fontWeight: 600, fontSize: 15 }}>ingressos.app</span>
         </Link>
 
         {/* Nav links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <nav className="navbar-nav" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <Link
             href="/evento"
+            className="navbar-nav-link"
             style={{
               padding: '6px 12px',
               borderRadius: 8,
@@ -77,6 +80,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/meus-ingressos"
+            className="navbar-nav-link"
             style={{
               padding: '6px 12px',
               borderRadius: 8,
@@ -93,6 +97,7 @@ export function Navbar() {
           {/* Cart */}
           <Link
             href="/carrinho"
+            className="navbar-nav-link"
             style={{
               position: 'relative',
               padding: '6px 12px',
@@ -128,8 +133,8 @@ export function Navbar() {
           </Link>
 
           {session ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
+            <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span className="navbar-auth-label" style={{ fontSize: 13, color: 'var(--fg-2)' }}>
                 {session.user.name?.split(' ')[0]}
               </span>
               <button
@@ -143,13 +148,14 @@ export function Navbar() {
                   fontWeight: 500,
                   color: 'var(--fg-2)',
                   cursor: 'pointer',
+                  minHeight: 36,
                 }}
               >
                 Sair
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link
                 href="/checkout"
                 style={{
@@ -160,12 +166,16 @@ export function Navbar() {
                   fontWeight: 500,
                   color: 'var(--fg-2)',
                   textDecoration: 'none',
+                  minHeight: 36,
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
                 Entrar
               </Link>
               <Link
                 href="/evento"
+                className="navbar-cta"
                 style={{
                   padding: '7px 16px',
                   borderRadius: 8,
@@ -174,6 +184,9 @@ export function Navbar() {
                   fontSize: 13,
                   fontWeight: 600,
                   textDecoration: 'none',
+                  minHeight: 36,
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
                 Comprar ingresso
