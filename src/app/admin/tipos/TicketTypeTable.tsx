@@ -95,6 +95,24 @@ export function TicketTypeTable({ ticketTypes }: { ticketTypes: TT[] }) {
     }
   }
 
+  const handleToggleActive = async (id: string, currentActive: boolean) => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/admin/ticket-types/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !currentActive }),
+      })
+      if (!res.ok) throw new Error('Erro ao atualizar')
+      router.refresh()
+    } catch {
+      setError('Erro ao atualizar visibilidade.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleDelete = async (id: string) => {
     setLoading(true)
     setError('')
@@ -216,7 +234,26 @@ export function TicketTypeTable({ ticketTypes }: { ticketTypes: TT[] }) {
                         </button>
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => handleToggleActive(tt.id, tt.isActive)}
+                          disabled={loading}
+                          title={tt.isActive ? 'Ocultar da página pública' : 'Publicar na página pública'}
+                          style={{
+                            padding: '5px 12px',
+                            borderRadius: 8,
+                            border: tt.isActive ? '1px solid var(--line-2)' : '1px solid rgba(111,168,74,0.4)',
+                            background: tt.isActive ? 'var(--bg-surface)' : 'rgba(111,168,74,0.08)',
+                            color: tt.isActive ? 'var(--fg-2)' : 'var(--fdc-leaf-deep)',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            fontFamily: 'inherit',
+                            whiteSpace: 'nowrap' as const,
+                          }}
+                        >
+                          {tt.isActive ? 'Ocultar' : 'Publicar'}
+                        </button>
                         <button onClick={() => openEdit(tt.id)} style={actionBtn('ghost')}>
                           Editar
                         </button>
