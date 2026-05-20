@@ -407,6 +407,29 @@ img, video, svg {
 .fdc-small { font-size: var(--t-sm); }
 
 /* ============================================================
+   EMBEDDED AUTH ANIMATIONS
+   ============================================================ */
+@keyframes auth-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.auth-step-enter {
+  animation: auth-fade-up 200ms var(--ease-out) both;
+}
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+.auth-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: auth-spin 600ms linear infinite;
+  flex-shrink: 0;
+}
+
+/* ============================================================
    RESPONSIVE — Mobile breakpoints
    ============================================================ */
 @media (max-width: 768px) {

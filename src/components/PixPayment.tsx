@@ -14,20 +14,7 @@ type PixPaymentProps = {
 function Step({ n, text }: { n: string; text: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-      <span
-        style={{
-          width: 22,
-          height: 22,
-          borderRadius: '50%',
-          background: 'var(--fdc-cream-deep)',
-          color: 'var(--fg-1)',
-          fontSize: 12,
-          fontWeight: 600,
-          display: 'grid',
-          placeItems: 'center',
-          flexShrink: 0,
-        }}
-      >
+      <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--fdc-cream-deep)', color: 'var(--fg-1)', fontSize: 12, fontWeight: 600, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
         {n}
       </span>
       <span style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.5 }}>{text}</span>
@@ -44,17 +31,14 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
 
   useEffect(() => {
     const expires = new Date(expiresAt).getTime()
-    const updateTimer = () => {
-      const now = Date.now()
-      const diff = Math.max(0, Math.floor((expires - now) / 1000))
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((expires - Date.now()) / 1000))
       setTimeLeft(diff)
       if (diff <= 0 && intervalRef.current) clearInterval(intervalRef.current)
     }
-    updateTimer()
-    intervalRef.current = setInterval(updateTimer, 1000)
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
+    tick()
+    intervalRef.current = setInterval(tick, 1000)
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [expiresAt])
 
   useEffect(() => {
@@ -62,16 +46,10 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       try {
         const res = await fetch(`/api/orders/${orderId}/status`)
         const data = await res.json()
-        if (data.status === 'PAID') {
-          router.push('/pagamento/sucesso')
-        }
-      } catch {
-        // ignore polling errors
-      }
+        if (data.status === 'PAID') router.push('/pagamento/sucesso')
+      } catch { /* ignore */ }
     }, 3000)
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current)
-    }
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
   }, [orderId, router])
 
   const handleCopy = () => {
@@ -86,189 +64,86 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
   const timerStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   const isExpiringSoon = timeLeft < 120
 
+  // Truncate code for display: first 28 chars + … + last 6
+  const codePreview = pixQrCodeText.length > 36
+    ? pixQrCodeText.slice(0, 28) + '…' + pixQrCodeText.slice(-6)
+    : pixQrCodeText
+
   return (
-    <div style={{ background: 'var(--bg-page)', minHeight: '60vh', padding: '8px 0 40px' }}>
+    <div style={{ padding: '8px 0 40px' }}>
       {/* Pending badge */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 14px',
-            borderRadius: 999,
-            background: 'rgba(244,183,59,0.18)',
-            color: 'var(--fdc-sun-deep)',
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: 'var(--fdc-sun-deep)',
-              display: 'inline-block',
-              boxShadow: '0 0 0 4px rgba(244,183,59,0.22)',
-            }}
-          />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 999, background: 'rgba(244,183,59,0.18)', color: 'var(--fdc-sun-deep)', fontSize: 13, fontWeight: 600 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--fdc-sun-deep)', display: 'inline-block', boxShadow: '0 0 0 4px rgba(244,183,59,0.22)' }} />
           Aguardando pagamento
         </div>
       </div>
 
-      <div
-        className="fdc-card pix-card"
-        style={{
-          padding: 0,
-          overflow: 'hidden',
-          display: 'grid',
-          gridTemplateColumns: '280px 1fr',
-          gap: 0,
-          alignItems: 'center',
-        }}
-      >
-        {/* QR Code */}
-        <div
-          className="pix-qr"
-          style={{
-            padding: 32,
-            borderRight: '1px solid var(--line-2)',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
+      <div className="fdc-card pix-card" style={{ padding: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: '260px 1fr', alignItems: 'stretch' }}>
+
+        {/* QR Code column */}
+        <div className="pix-qr" style={{ padding: 28, borderRight: '1px solid var(--line-2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, background: 'var(--bg-sunken)' }}>
           {pixQrCode ? (
-            <div
-              style={{
-                padding: 10,
-                background: 'white',
-                borderRadius: 12,
-                border: '1px solid var(--line-2)',
-              }}
-            >
-              <Image
-                src={`data:image/png;base64,${pixQrCode}`}
-                alt="PIX QR Code"
-                width={200}
-                height={200}
-              />
+            <div style={{ padding: 10, background: 'white', borderRadius: 12, border: '1px solid var(--line-2)', boxShadow: 'var(--shadow-sm)' }}>
+              <Image src={`data:image/png;base64,${pixQrCode}`} alt="PIX QR Code" width={180} height={180} />
             </div>
           ) : (
-            <div
-              style={{
-                width: 220,
-                height: 220,
-                background: 'var(--bg-sunken)',
-                borderRadius: 12,
-              }}
-            />
+            <div style={{ width: 200, height: 200, background: 'var(--bg-surface)', borderRadius: 12 }} />
           )}
+          <p style={{ fontSize: 12, color: 'var(--fg-3)', textAlign: 'center', margin: 0 }}>
+            Escaneie com o app do banco
+          </p>
         </div>
 
-        {/* Details */}
-        <div style={{ padding: '32px 32px' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 28,
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              color: 'var(--fg-1)',
-              margin: '0 0 6px',
-            }}
-          >
-            Pague com PIX
-          </h2>
-          <p style={{ color: 'var(--fg-2)', fontSize: 15, margin: '0 0 20px' }}>
-            Expira em{' '}
-            <strong
-              style={{ color: isExpiringSoon ? 'var(--fdc-danger)' : 'var(--fg-1)', fontFamily: 'var(--font-mono)' }}
-            >
-              {timerStr}
-            </strong>
-          </p>
+        {/* Details column */}
+        <div style={{ padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
 
-          {/* Copy field */}
-          <div style={{ marginBottom: 20 }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--fg-2)',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                marginBottom: 6,
-              }}
-            >
+          {/* Title + timer */}
+          <div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--fg-1)', margin: '0 0 6px' }}>
+              Pague com PIX
+            </h2>
+            <p style={{ color: 'var(--fg-2)', fontSize: 14, margin: 0 }}>
+              Expira em{' '}
+              <strong style={{ color: isExpiringSoon ? 'var(--fdc-danger)' : 'var(--fg-1)', fontFamily: 'var(--font-mono)', fontSize: 16 }}>
+                {timerStr}
+              </strong>
+            </p>
+          </div>
+
+          {/* PIX code copy section */}
+          <div style={{ background: 'var(--bg-sunken)', borderRadius: 12, padding: 16, border: '1px solid var(--line-2)' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>
               PIX copia e cola
-            </label>
-            <div className="pix-copy-row" style={{ display: 'flex', gap: 8 }}>
-              <code
-                style={{
-                  flex: 1,
-                  padding: '11px 14px',
-                  borderRadius: 10,
-                  background: 'var(--bg-sunken)',
-                  border: '1px solid var(--line-2)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--fg-2)',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  display: 'block',
-                }}
-              >
-                {pixQrCodeText}
-              </code>
-              <button
-                onClick={handleCopy}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '0 16px',
-                  borderRadius: 10,
-                  border: `1.5px solid ${copied ? 'var(--fdc-leaf)' : 'var(--line-1)'}`,
-                  background: copied ? 'rgba(111,168,74,0.1)' : 'var(--bg-surface)',
-                  color: copied ? 'var(--fdc-leaf-deep)' : 'var(--fg-1)',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all var(--dur-fast)',
-                }}
-              >
-                {copied ? '✓ Copiado' : '📋 Copiar'}
-              </button>
-            </div>
+            </p>
+            {/* Truncated code preview */}
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--fg-2)', margin: '0 0 12px', wordBreak: 'break-all', lineHeight: 1.5 }}>
+              {codePreview}
+            </p>
+            {/* Copy button — full width, prominent */}
+            <button
+              onClick={handleCopy}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '12px 20px', borderRadius: 10, border: `1.5px solid ${copied ? 'var(--fdc-leaf)' : 'var(--fdc-tangerine)'}`, background: copied ? 'rgba(111,168,74,0.1)' : 'rgba(236,82,18,0.06)', color: copied ? 'var(--fdc-leaf-deep)' : 'var(--fdc-tangerine-deep)', fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all 140ms', fontFamily: 'inherit' }}
+            >
+              {copied ? (
+                <><span>✓</span> Código copiado!</>
+              ) : (
+                <><span style={{ fontSize: 16 }}>📋</span> Copiar código PIX</>
+              )}
+            </button>
           </div>
 
           {/* Steps */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <Step n="1" text="Abra o app do seu banco" />
-            <Step n="2" text="Escolha pagar com PIX e aponte para o QR Code" />
+            <Step n="2" text="Escolha PIX e escaneie o QR Code ao lado" />
             <Step n="3" text="Confirme — o ingresso chega por e-mail" />
           </div>
 
-          {/* Shield note */}
-          <div
-            style={{
-              marginTop: 20,
-              padding: '12px 14px',
-              background: 'rgba(111,168,74,0.1)',
-              borderRadius: 10,
-              fontSize: 13,
-              color: 'var(--fdc-leaf-deep)',
-              display: 'flex',
-              gap: 8,
-              alignItems: 'flex-start',
-            }}
-          >
+          {/* Auto-update note */}
+          <div style={{ padding: '12px 14px', background: 'rgba(111,168,74,0.08)', borderRadius: 10, fontSize: 13, color: 'var(--fdc-leaf-deep)', display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>🔒</span>
-            <span>Quando o pagamento for confirmado, esta página atualiza sozinha.</span>
+            <span>Esta página atualiza automaticamente após o pagamento.</span>
           </div>
         </div>
       </div>
