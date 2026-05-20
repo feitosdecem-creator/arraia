@@ -6,7 +6,8 @@ import { signOut } from 'next-auth/react'
 
 const links = [
   { href: '/admin/dashboard', label: 'Visão geral', icon: '📊' },
-  { href: '/admin/ingressos', label: 'Ingressos', icon: '🎫' },
+  { href: '/admin/tipos', label: 'Tipos de ingresso', icon: '🎫' },
+  { href: '/admin/ingressos', label: 'Ingressos emitidos', icon: '🎟️' },
   { href: '/admin/participantes', label: 'Participantes', icon: '👥' },
   { href: '/admin/validar', label: 'Validar entrada', icon: '📷' },
   { href: '/admin/financeiro', label: 'Financeiro', icon: '💰' },
