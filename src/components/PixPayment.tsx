@@ -178,11 +178,11 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
             <button
               onClick={handleSync}
               disabled={syncing}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', borderRadius: 10, border: '1.5px solid var(--line-1)', background: 'var(--bg-surface)', color: syncing ? 'var(--fg-3)' : 'var(--fg-1)', fontWeight: 600, fontSize: 13, cursor: syncing ? 'not-allowed' : 'pointer', transition: 'all 140ms', fontFamily: 'inherit' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 20px', borderRadius: 10, border: 'none', background: syncing ? 'var(--fdc-stone-2)' : 'var(--fdc-tangerine)', color: 'var(--fdc-cream)', fontWeight: 700, fontSize: 14, cursor: syncing ? 'not-allowed' : 'pointer', transition: 'background 140ms', fontFamily: 'inherit', width: '100%' }}
             >
               {syncing
-                ? <><span className="auth-spinner" style={{ borderTopColor: 'var(--fg-2)', borderColor: 'var(--line-2)' }} /> Verificando…</>
-                : '🔄 Verificar pagamento'}
+                ? <><span className="auth-spinner" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} /> Verificando…</>
+                : 'Verificar pagamento'}
             </button>
             {syncMsg && (
               <p style={{ fontSize: 12, color: 'var(--fg-2)', margin: 0, textAlign: 'center' }}>

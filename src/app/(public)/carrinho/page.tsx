@@ -6,99 +6,137 @@ import Link from 'next/link'
 export default function CarrinhoPage() {
   const { items, updateQuantity, removeItem, total } = useCart()
 
-  const totalFormatted = (total / 100).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
+  const fmt = (cents: number) =>
+    'R$ ' + (cents / 100).toFixed(2).replace('.', ',')
 
   if (items.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="text-6xl mb-4">🛒</div>
-        <h1 className="text-3xl font-bold text-amber-900 mb-4">Carrinho vazio</h1>
-        <p className="text-gray-500 mb-8">Adicione ingressos para continuar.</p>
-        <Link
-          href="/evento"
-          className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3 rounded-xl transition-colors"
-        >
-          Ver Ingressos
-        </Link>
+      <div style={{ background: 'var(--bg-page)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+        <div style={{ textAlign: 'center', maxWidth: 400 }}>
+          <div style={{ fontSize: 52, marginBottom: 20 }}>🛒</div>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+            Carrinho vazio
+          </h1>
+          <p style={{ color: 'var(--fg-2)', fontSize: 15, margin: '0 0 28px' }}>
+            Selecione seus ingressos antes de continuar.
+          </p>
+          <Link
+            href="/evento"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 'var(--radius-lg)', background: 'var(--fdc-tangerine)', color: 'var(--fdc-cream)', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
+          >
+            Ver ingressos →
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-amber-900 mb-8">Seu Carrinho</h1>
+    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '40px 24px 80px' }}>
 
-      <div className="space-y-4 mb-8">
-        {items.map((item) => {
-          const priceFormatted = (item.price / 100).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          })
-          const subtotalFormatted = ((item.price * item.quantity) / 100).toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          })
+        {/* Header */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="fdc-eyebrow" style={{ marginBottom: 4 }}>Resumo</div>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--fg-1)', margin: 0 }}>
+            Seu carrinho
+          </h1>
+        </div>
 
-          return (
+        {/* Items */}
+        <div className="fdc-card" style={{ padding: 0, overflow: 'hidden', marginBottom: 20 }}>
+          {items.map((item, i) => (
             <div
               key={item.ticketTypeId}
-              className="bg-white border-2 border-amber-100 rounded-2xl p-5 flex items-center gap-4 shadow-sm"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                padding: '18px 20px',
+                borderBottom: i < items.length - 1 ? '1px solid var(--line-2)' : 'none',
+              }}
             >
-              <div className="flex-1">
-                <h3 className="font-bold text-amber-900">{item.name}</h3>
-                <p className="text-sm text-gray-500">{priceFormatted} cada</p>
+              {/* Icon */}
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--fdc-cream-deep)', display: 'grid', placeItems: 'center', fontSize: 18, flexShrink: 0 }}>
+                🎟
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Name + unit price */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--fg-1)', marginBottom: 2 }}>
+                  {item.name}
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--fg-3)' }}>
+                  {item.price === 0 ? 'Gratuito' : fmt(item.price) + ' por ingresso'}
+                </div>
+              </div>
+
+              {/* Stepper */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button
                   onClick={() => updateQuantity(item.ticketTypeId, item.quantity - 1)}
-                  className="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg font-bold text-lg flex items-center justify-center transition-colors cursor-pointer"
+                  style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 18, display: 'grid', placeItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   −
                 </button>
-                <span className="w-8 text-center font-bold">{item.quantity}</span>
+                <span style={{ fontWeight: 700, fontSize: 15, minWidth: 18, textAlign: 'center', color: 'var(--fg-1)' }}>
+                  {item.quantity}
+                </span>
                 <button
                   onClick={() => updateQuantity(item.ticketTypeId, item.quantity + 1)}
-                  className="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg font-bold text-lg flex items-center justify-center transition-colors cursor-pointer"
+                  style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 18, display: 'grid', placeItems: 'center', cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   +
                 </button>
               </div>
 
-              <div className="text-right min-w-[80px]">
-                <p className="font-bold text-red-700">{subtotalFormatted}</p>
+              {/* Subtotal + remove */}
+              <div style={{ textAlign: 'right', minWidth: 72, flexShrink: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--fg-1)' }}>
+                  {item.price === 0 ? '—' : fmt(item.price * item.quantity)}
+                </div>
                 <button
                   onClick={() => removeItem(item.ticketTypeId)}
-                  className="text-xs text-gray-400 hover:text-red-500 transition-colors cursor-pointer mt-1"
+                  style={{ fontSize: 12, color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', fontFamily: 'inherit', marginTop: 2 }}
                 >
                   Remover
                 </button>
               </div>
             </div>
-          )
-        })}
-      </div>
-
-      <div className="bg-amber-50 rounded-2xl p-6 border border-amber-200">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-amber-900">Total</span>
-          <span className="text-3xl font-bold text-red-700">{totalFormatted}</span>
+          ))}
         </div>
-        <Link
-          href="/checkout"
-          className="block w-full text-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 rounded-xl transition-colors text-lg"
-        >
-          Finalizar Compra →
-        </Link>
-        <Link
-          href="/evento"
-          className="block w-full text-center text-amber-700 hover:text-amber-900 text-sm mt-3 transition-colors"
-        >
-          ← Continuar comprando
-        </Link>
+
+        {/* Total + CTA */}
+        <div className="fdc-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+            <span style={{ fontSize: 14, color: 'var(--fg-2)' }}>Subtotal</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--fg-1)' }}>{fmt(total)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+            <span style={{ fontSize: 14, color: 'var(--fg-2)' }}>
+              Taxa de serviço <em style={{ color: 'var(--fdc-leaf-deep)', fontStyle: 'normal' }}>· grátis no PIX</em>
+            </span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--fg-1)' }}>R$ 0,00</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderTop: '1.5px dashed var(--line-2)', paddingTop: 16, marginBottom: 20 }}>
+            <span style={{ fontWeight: 600, fontSize: 16 }}>Total</span>
+            <span style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--fg-1)' }}>{fmt(total)}</span>
+          </div>
+
+          <Link
+            href="/checkout"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '15px 24px', borderRadius: 'var(--radius-lg)', background: 'var(--fdc-tangerine)', color: 'var(--fdc-cream)', fontWeight: 700, fontSize: 16, textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}
+          >
+            Finalizar compra →
+          </Link>
+
+          <Link
+            href="/evento"
+            style={{ display: 'block', textAlign: 'center', marginTop: 14, fontSize: 14, color: 'var(--fg-2)', textDecoration: 'none' }}
+          >
+            ← Continuar comprando
+          </Link>
+        </div>
       </div>
     </div>
   )

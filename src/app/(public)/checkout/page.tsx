@@ -350,8 +350,8 @@ export default function CheckoutPage() {
       })
       const data = await res.json()
       if (!res.ok) { setOrderError(data.error || 'Erro ao criar pedido'); return }
-      clearCart()
       router.push(`/pagamento/${data.orderId}`)
+      clearCart()
     } catch {
       setOrderError('Erro ao processar pedido. Tente novamente.')
     } finally {
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !orderLoading) {
     return (
       <div style={{ maxWidth: 480, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🛒</div>
@@ -421,10 +421,7 @@ export default function CheckoutPage() {
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--fg-1)', margin: '0 0 14px' }}>
                 Forma de pagamento
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <PaymentOption icon="🏦" name="PIX" desc="Aprovação instantânea · sem taxa" selected />
-                <PaymentOption icon="💳" name="Cartão de crédito" desc="Em até 3× sem juros (em breve)" />
-              </div>
+              <PaymentOption icon="🏦" name="PIX" desc="Aprovação instantânea · sem taxa" selected />
             </div>
 
             {/* Order error */}
