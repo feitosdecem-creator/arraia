@@ -224,3 +224,166 @@ html, body {
   letter-spacing: var(--tracking-caps);
   color: var(--fdc-tangerine);
 }
+
+/* ============================================================
+   DESIGN SYSTEM COMPONENT CLASSES
+   Translated from the tp-* design prototype classes
+   ============================================================ */
+
+/* Cards */
+.fdc-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.fdc-card-lg {
+  padding: 24px;
+}
+
+/* Buttons */
+.fdc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+.fdc-btn-primary {
+  background: var(--fdc-tangerine);
+  color: var(--fdc-cream);
+}
+.fdc-btn-primary:hover {
+  background: var(--fdc-tangerine-deep);
+}
+.fdc-btn-primary:disabled {
+  background: var(--fdc-stone-2);
+  color: var(--fg-3);
+  cursor: not-allowed;
+}
+.fdc-btn-outline {
+  background: transparent;
+  color: var(--fg-1);
+  border: 1.5px solid var(--line-1);
+}
+.fdc-btn-outline:hover {
+  border-color: var(--fdc-tangerine);
+  color: var(--fdc-tangerine);
+}
+.fdc-btn-ghost {
+  background: transparent;
+  color: var(--fg-2);
+}
+.fdc-btn-ghost:hover {
+  background: var(--bg-sunken);
+  color: var(--fg-1);
+}
+.fdc-btn-lg {
+  font-size: 16px;
+  padding: 12px 24px;
+  border-radius: var(--radius-lg);
+}
+.fdc-btn-sm {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+.fdc-btn-block {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Inputs */
+.fdc-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--line-1);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  background: var(--bg-surface);
+  color: var(--fg-1);
+  transition: border-color var(--dur-fast);
+}
+.fdc-input:focus {
+  outline: none;
+  border-color: var(--fdc-tangerine);
+}
+.fdc-input::placeholder {
+  color: var(--fg-3);
+}
+.fdc-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-1);
+  margin-bottom: 6px;
+}
+
+/* Pills / Badges */
+.fdc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--fdc-sand);
+  color: var(--fg-1);
+}
+.fdc-pill-soft {
+  background: rgba(236,82,18,0.1);
+  color: var(--fdc-tangerine-deep);
+}
+.fdc-pill-success {
+  background: rgba(111,168,74,0.15);
+  color: var(--fdc-leaf-deep);
+}
+.fdc-pill-warn {
+  background: rgba(244,183,59,0.2);
+  color: var(--fdc-sun-deep);
+}
+
+/* Step bar */
+.fdc-stepbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Success mark */
+.fdc-success-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(111,168,74,0.18);
+  color: var(--fdc-leaf-deep);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+/* QR placeholder */
+.fdc-qr {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--fdc-sand) 0%, var(--fdc-cream-deep) 100%);
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+
+/* Muted text helpers */
+.fdc-muted { color: var(--fg-2); }
+.fdc-small { font-size: var(--t-sm); }

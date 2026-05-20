@@ -5,46 +5,112 @@ import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 
 const links = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/admin/dashboard', label: 'Visão geral', icon: '📊' },
   { href: '/admin/ingressos', label: 'Ingressos', icon: '🎫' },
   { href: '/admin/participantes', label: 'Participantes', icon: '👥' },
-  { href: '/admin/validar', label: 'Validar QR', icon: '📷' },
+  { href: '/admin/validar', label: 'Validar entrada', icon: '📷' },
+  { href: '/admin/financeiro', label: 'Financeiro', icon: '💰' },
+  { href: '/admin/configuracoes', label: 'Configurações', icon: '⚙️' },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 bg-amber-900 text-white min-h-screen flex flex-col">
-      <div className="p-6 border-b border-amber-700">
-        <h1 className="text-xl font-bold">🎪 Admin</h1>
-        <p className="text-amber-300 text-xs mt-1">Arraiá da Escola 2025</p>
+    <aside
+      style={{
+        width: 220,
+        background: 'var(--bg-surface)',
+        borderRight: '1px solid var(--line-2)',
+        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '24px 14px',
+      }}
+    >
+      {/* Brand / event name */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          padding: '0 8px',
+          marginBottom: 28,
+        }}
+      >
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: 'var(--fdc-tangerine)',
+            color: 'var(--fdc-cream)',
+            display: 'grid',
+            placeItems: 'center',
+            fontWeight: 700,
+            fontSize: 16,
+            flexShrink: 0,
+          }}
+        >
+          A
+        </div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--fg-1)', lineHeight: 1.1 }}>
+            Admin
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>Arraiá da Escola</div>
+        </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      {/* Nav links */}
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {links.map((link) => {
-          const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+          const isActive =
+            pathname === link.href || pathname.startsWith(link.href + '/')
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
-                isActive
-                  ? 'bg-amber-600 text-white'
-                  : 'text-amber-100 hover:bg-amber-800'
-              }`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '10px 12px',
+                borderRadius: 10,
+                color: isActive ? 'var(--fg-1)' : 'var(--fg-2)',
+                background: isActive ? 'var(--bg-sunken)' : 'transparent',
+                fontWeight: isActive ? 600 : 500,
+                fontSize: 14,
+                textDecoration: 'none',
+                transition: 'all var(--dur-fast)',
+              }}
             >
-              <span>{link.icon}</span>
+              <span style={{ fontSize: 16 }}>{link.icon}</span>
               {link.label}
             </Link>
           )
         })}
       </nav>
 
-      <div className="p-4 border-t border-amber-700">
+      {/* Logout */}
+      <div style={{ paddingTop: 16, borderTop: '1px solid var(--line-2)' }}>
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-amber-200 hover:bg-amber-800 transition-colors text-sm cursor-pointer"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '10px 12px',
+            borderRadius: 10,
+            background: 'none',
+            border: 'none',
+            color: 'var(--fg-2)',
+            fontWeight: 500,
+            fontSize: 14,
+            cursor: 'pointer',
+            width: '100%',
+            transition: 'background var(--dur-fast)',
+          }}
         >
           <span>🚪</span>
           Sair

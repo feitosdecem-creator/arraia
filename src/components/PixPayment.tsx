@@ -11,6 +11,30 @@ type PixPaymentProps = {
   expiresAt: string
 }
 
+function Step({ n, text }: { n: string; text: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <span
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: '50%',
+          background: 'var(--fdc-cream-deep)',
+          color: 'var(--fg-1)',
+          fontSize: 12,
+          fontWeight: 600,
+          display: 'grid',
+          placeItems: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {n}
+      </span>
+      <span style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.5 }}>{text}</span>
+    </div>
+  )
+}
+
 export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: PixPaymentProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
@@ -60,59 +84,192 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
   const timerStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  const isExpiringSoon = timeLeft < 120
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-amber-900 text-center mb-2">Pague com PIX</h2>
-      <p className="text-gray-500 text-center text-sm mb-6">
-        Escaneie o QR Code ou copie o código
-      </p>
+    <div style={{ background: 'var(--bg-page)', minHeight: '60vh', padding: '8px 0 40px' }}>
+      {/* Pending badge */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '6px 14px',
+            borderRadius: 999,
+            background: 'rgba(244,183,59,0.18)',
+            color: 'var(--fdc-sun-deep)',
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: 'var(--fdc-sun-deep)',
+              display: 'inline-block',
+              boxShadow: '0 0 0 4px rgba(244,183,59,0.22)',
+            }}
+          />
+          Aguardando pagamento
+        </div>
+      </div>
 
-      {pixQrCode && (
-        <div className="flex justify-center mb-6">
-          <div className="p-3 border-2 border-amber-300 rounded-xl">
-            <Image
-              src={`data:image/png;base64,${pixQrCode}`}
-              alt="PIX QR Code"
-              width={200}
-              height={200}
-              className="rounded"
+      <div
+        className="fdc-card"
+        style={{
+          padding: 0,
+          overflow: 'hidden',
+          display: 'grid',
+          gridTemplateColumns: '280px 1fr',
+          gap: 0,
+          alignItems: 'center',
+        }}
+      >
+        {/* QR Code */}
+        <div
+          style={{
+            padding: 32,
+            borderRight: '1px solid var(--line-2)',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          {pixQrCode ? (
+            <div
+              style={{
+                padding: 10,
+                background: 'white',
+                borderRadius: 12,
+                border: '1px solid var(--line-2)',
+              }}
+            >
+              <Image
+                src={`data:image/png;base64,${pixQrCode}`}
+                alt="PIX QR Code"
+                width={200}
+                height={200}
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                width: 220,
+                height: 220,
+                background: 'var(--bg-sunken)',
+                borderRadius: 12,
+              }}
             />
+          )}
+        </div>
+
+        {/* Details */}
+        <div style={{ padding: '32px 32px' }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 28,
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              color: 'var(--fg-1)',
+              margin: '0 0 6px',
+            }}
+          >
+            Pague com PIX
+          </h2>
+          <p style={{ color: 'var(--fg-2)', fontSize: 15, margin: '0 0 20px' }}>
+            Expira em{' '}
+            <strong
+              style={{ color: isExpiringSoon ? 'var(--fdc-danger)' : 'var(--fg-1)', fontFamily: 'var(--font-mono)' }}
+            >
+              {timerStr}
+            </strong>
+          </p>
+
+          {/* Copy field */}
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: 'block',
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--fg-2)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                marginBottom: 6,
+              }}
+            >
+              PIX copia e cola
+            </label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <code
+                style={{
+                  flex: 1,
+                  padding: '11px 14px',
+                  borderRadius: 10,
+                  background: 'var(--bg-sunken)',
+                  border: '1px solid var(--line-2)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 12,
+                  color: 'var(--fg-2)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  display: 'block',
+                }}
+              >
+                {pixQrCodeText}
+              </code>
+              <button
+                onClick={handleCopy}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '0 16px',
+                  borderRadius: 10,
+                  border: `1.5px solid ${copied ? 'var(--fdc-leaf)' : 'var(--line-1)'}`,
+                  background: copied ? 'rgba(111,168,74,0.1)' : 'var(--bg-surface)',
+                  color: copied ? 'var(--fdc-leaf-deep)' : 'var(--fg-1)',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all var(--dur-fast)',
+                }}
+              >
+                {copied ? '✓ Copiado' : '📋 Copiar'}
+              </button>
+            </div>
+          </div>
+
+          {/* Steps */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Step n="1" text="Abra o app do seu banco" />
+            <Step n="2" text="Escolha pagar com PIX e aponte para o QR Code" />
+            <Step n="3" text="Confirme — o ingresso chega por e-mail" />
+          </div>
+
+          {/* Shield note */}
+          <div
+            style={{
+              marginTop: 20,
+              padding: '12px 14px',
+              background: 'rgba(111,168,74,0.1)',
+              borderRadius: 10,
+              fontSize: 13,
+              color: 'var(--fdc-leaf-deep)',
+              display: 'flex',
+              gap: 8,
+              alignItems: 'flex-start',
+            }}
+          >
+            <span>🔒</span>
+            <span>Quando o pagamento for confirmado, esta página atualiza sozinha.</span>
           </div>
         </div>
-      )}
-
-      <div className="bg-amber-50 rounded-xl p-4 mb-4">
-        <p className="text-xs text-amber-700 font-semibold mb-2 uppercase tracking-wide">
-          Copia e Cola
-        </p>
-        <p className="text-xs text-gray-700 break-all font-mono mb-3 select-all">{pixQrCodeText}</p>
-        <button
-          onClick={handleCopy}
-          className={`w-full py-2 rounded-lg font-semibold text-sm transition-all ${
-            copied
-              ? 'bg-green-500 text-white'
-              : 'bg-amber-500 hover:bg-amber-600 text-white cursor-pointer'
-          }`}
-        >
-          {copied ? '✓ Copiado!' : 'Copiar Código PIX'}
-        </button>
-      </div>
-
-      <div className="text-center">
-        <p className="text-sm text-gray-500 mb-1">Expira em</p>
-        <p
-          className={`text-3xl font-bold tabular-nums ${
-            timeLeft < 120 ? 'text-red-600' : 'text-amber-700'
-          }`}
-        >
-          {timerStr}
-        </p>
-      </div>
-
-      <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 justify-center">
-        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        Aguardando confirmação do pagamento...
       </div>
     </div>
   )
