@@ -8,6 +8,131 @@ import Link from 'next/link'
 
 type AuthMode = 'login' | 'register'
 
+const STEPS = ['Ingressos', 'Dados', 'Pagamento', 'Confirmação']
+
+function StepBar({ step }: { step: number }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+      {STEPS.map((s, i) => (
+        <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              color: i <= step ? 'var(--fg-1)' : 'var(--fg-3)',
+              fontWeight: i === step ? 600 : 400,
+              fontSize: 13,
+            }}
+          >
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background:
+                  i < step
+                    ? 'var(--fdc-leaf)'
+                    : i === step
+                    ? 'var(--fdc-tangerine)'
+                    : 'var(--fdc-cream-deep)',
+                color:
+                  i <= step ? 'var(--fdc-cream)' : 'var(--fg-3)',
+                display: 'grid',
+                placeItems: 'center',
+                fontSize: 11,
+                fontWeight: 600,
+              }}
+            >
+              {i < step ? '✓' : i + 1}
+            </div>
+            <span>{s}</span>
+          </div>
+          {i < STEPS.length - 1 && (
+            <div
+              style={{
+                width: 24,
+                height: 1,
+                background: 'var(--line-2)',
+                flexShrink: 0,
+              }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PaymentOption({
+  icon,
+  name,
+  desc,
+  selected,
+}: {
+  icon: string
+  name: string
+  desc: string
+  selected?: boolean
+}) {
+  return (
+    <label
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 14,
+        padding: 16,
+        borderRadius: 12,
+        border: `1.5px solid ${selected ? 'var(--fdc-tangerine)' : 'var(--line-2)'}`,
+        background: selected ? 'rgba(236,82,18,0.04)' : 'var(--bg-surface)',
+        cursor: 'pointer',
+      }}
+    >
+      <div
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: '50%',
+          border: `2px solid ${selected ? 'var(--fdc-tangerine)' : 'var(--line-2)'}`,
+          padding: 3,
+          flexShrink: 0,
+          display: 'grid',
+          placeItems: 'center',
+        }}
+      >
+        {selected && (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              background: 'var(--fdc-tangerine)',
+            }}
+          />
+        )}
+      </div>
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 10,
+          background: 'var(--fdc-cream-deep)',
+          display: 'grid',
+          placeItems: 'center',
+          fontSize: 20,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 600, fontSize: 15 }}>{name}</div>
+        <div style={{ fontSize: 13, color: 'var(--fg-2)' }}>{desc}</div>
+      </div>
+    </label>
+  )
+}
+
 export default function CheckoutPage() {
   const { data: session, status } = useSession()
   const { items, total, clearCart } = useCart()
@@ -17,10 +142,8 @@ export default function CheckoutPage() {
   const [error, setError] = useState('')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
-  const totalFormatted = (total / 100).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
+  const totalFormatted =
+    'R$ ' + (total / 100).toFixed(2).replace('.', ',')
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,10 +215,44 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <div className="text-6xl mb-4">🛒</div>
-        <h1 className="text-2xl font-bold text-amber-900 mb-4">Carrinho vazio</h1>
-        <Link href="/evento" className="text-amber-600 hover:text-amber-800 font-medium">
+      <div
+        style={{
+          maxWidth: 480,
+          margin: '0 auto',
+          padding: '80px 24px',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🛒</div>
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 28,
+            fontWeight: 700,
+            color: 'var(--fg-1)',
+            marginBottom: 12,
+          }}
+        >
+          Carrinho vazio
+        </h1>
+        <p style={{ color: 'var(--fg-2)', marginBottom: 24 }}>
+          Selecione seus ingressos antes de continuar.
+        </p>
+        <Link
+          href="/evento"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '12px 24px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'var(--fdc-tangerine)',
+            color: 'var(--fdc-cream)',
+            fontWeight: 600,
+            fontSize: 15,
+            textDecoration: 'none',
+          }}
+        >
           Ver ingressos →
         </Link>
       </div>
@@ -103,125 +260,265 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-amber-900 mb-8">Checkout</h1>
-
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Order summary */}
-        <div>
-          <h2 className="text-xl font-semibold text-amber-900 mb-4">Resumo do Pedido</h2>
-          <div className="bg-amber-50 rounded-2xl p-5 space-y-3 border border-amber-200">
-            {items.map((item) => (
-              <div key={item.ticketTypeId} className="flex justify-between text-sm">
-                <span className="text-gray-700">
-                  {item.name} × {item.quantity}
-                </span>
-                <span className="font-semibold text-gray-900">
-                  {((item.price * item.quantity) / 100).toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
-                </span>
-              </div>
-            ))}
-            <div className="border-t border-amber-200 pt-3 flex justify-between font-bold">
-              <span className="text-amber-900">Total</span>
-              <span className="text-red-700 text-lg">{totalFormatted}</span>
-            </div>
-          </div>
+    <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          padding: '32px 40px 80px',
+        }}
+      >
+        {/* Step bar */}
+        <div style={{ marginBottom: 28 }}>
+          <StepBar step={1} />
         </div>
 
-        {/* Auth or confirm */}
-        <div>
-          {status === 'authenticated' ? (
-            <div>
-              <h2 className="text-xl font-semibold text-amber-900 mb-4">Confirmar Compra</h2>
-              <div className="bg-white border border-amber-200 rounded-2xl p-5 mb-4">
-                <p className="text-sm text-gray-600 mb-1">Comprando como:</p>
-                <p className="font-semibold">{session.user.name}</p>
-                <p className="text-sm text-gray-500">{session.user.email}</p>
-              </div>
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-red-700 text-sm">
-                  {error}
-                </div>
-              )}
-              <button
-                onClick={handleOrder}
-                disabled={loading}
-                className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-colors text-lg cursor-pointer disabled:cursor-not-allowed"
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) 380px',
+            gap: 36,
+            alignItems: 'start',
+          }}
+        >
+          {/* LEFT col */}
+          <div>
+            <h1
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(24px, 3.5vw, 40px)',
+                fontWeight: 700,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.05,
+                color: 'var(--fg-1)',
+                margin: '0 0 6px',
+              }}
+            >
+              Quase lá — só precisamos dos seus dados
+            </h1>
+            <p style={{ color: 'var(--fg-2)', fontSize: 16, margin: '0 0 24px' }}>
+              Vamos enviar os ingressos para o e-mail abaixo.
+            </p>
+
+            {/* Buyer details */}
+            <div className="fdc-card" style={{ padding: 24, marginBottom: 20 }}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 20,
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--fg-1)',
+                  margin: '0 0 6px',
+                }}
               >
-                {loading ? 'Processando...' : 'Gerar PIX →'}
-              </button>
-              <p className="text-xs text-center text-gray-400 mt-2">
-                Você será redirecionado para a página de pagamento PIX
+                Comprador
+              </h3>
+              <p style={{ color: 'var(--fg-2)', fontSize: 13, margin: '0 0 20px' }}>
+                Usaremos esses dados para enviar a confirmação.
               </p>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-xl font-semibold text-amber-900 mb-4">
-                {mode === 'login' ? 'Entrar na conta' : 'Criar conta'}
-              </h2>
-              <form onSubmit={handleAuthSubmit} className="space-y-4">
-                {mode === 'register' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+
+              {status === 'authenticated' ? (
+                <div
+                  style={{
+                    padding: '14px 16px',
+                    background: 'var(--bg-sunken)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 14,
+                  }}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{session.user.name}</div>
+                  <div style={{ color: 'var(--fg-2)', marginTop: 2 }}>{session.user.email}</div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 16,
+                  }}
+                >
+                  {mode === 'register' && (
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="fdc-label">Nome completo</label>
+                      <input
+                        type="text"
+                        required
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        className="fdc-input"
+                        placeholder="Maria Souza"
+                      />
+                    </div>
+                  )}
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label className="fdc-label">E-mail</label>
                     <input
-                      type="text"
+                      type="email"
                       required
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                      placeholder="Seu nome completo"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="fdc-input"
+                      placeholder="voce@email.com"
                     />
                   </div>
-                )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                  <input
-                    type="email"
-                    required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    placeholder="seu@email.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                  <input
-                    type="password"
-                    required
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    placeholder="••••••••"
-                    minLength={6}
-                  />
-                </div>
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm">
-                    {error}
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label className="fdc-label">Senha</label>
+                    <input
+                      type="password"
+                      required
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      className="fdc-input"
+                      placeholder="••••••••"
+                      minLength={6}
+                    />
                   </div>
-                )}
+                </div>
+              )}
+            </div>
 
+            {/* Payment method */}
+            <div className="fdc-card" style={{ padding: 24, marginBottom: 20 }}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 20,
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--fg-1)',
+                  margin: '0 0 14px',
+                }}
+              >
+                Forma de pagamento
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <PaymentOption
+                  icon="🏦"
+                  name="PIX"
+                  desc="Aprovação instantânea · sem taxa"
+                  selected
+                />
+                <PaymentOption
+                  icon="💳"
+                  name="Cartão de crédito"
+                  desc="Em até 3× sem juros (em breve)"
+                />
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  background: 'rgba(216,56,56,0.08)',
+                  border: '1px solid rgba(216,56,56,0.2)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--fdc-danger)',
+                  fontSize: 14,
+                  marginBottom: 20,
+                }}
+              >
+                {error}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: 8,
+              }}
+            >
+              <Link
+                href="/evento"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 16px',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'transparent',
+                  color: 'var(--fg-2)',
+                  fontWeight: 500,
+                  fontSize: 14,
+                  textDecoration: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                ← Voltar
+              </Link>
+
+              {status === 'authenticated' ? (
                 <button
-                  type="submit"
+                  onClick={handleOrder}
                   disabled={loading}
-                  className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition-colors cursor-pointer disabled:cursor-not-allowed"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '13px 28px',
+                    borderRadius: 'var(--radius-lg)',
+                    background: loading ? 'var(--fdc-stone-2)' : 'var(--fdc-tangerine)',
+                    color: 'var(--fdc-cream)',
+                    fontWeight: 700,
+                    fontSize: 16,
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    transition: 'background var(--dur-fast)',
+                  }}
                 >
-                  {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar conta'}
+                  {loading ? 'Processando…' : 'Ir para o pagamento →'}
                 </button>
-              </form>
+              ) : (
+                <button
+                  onClick={handleAuthSubmit as unknown as React.MouseEventHandler}
+                  disabled={loading}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '13px 28px',
+                    borderRadius: 'var(--radius-lg)',
+                    background: loading ? 'var(--fdc-stone-2)' : 'var(--fdc-tangerine)',
+                    color: 'var(--fdc-cream)',
+                    fontWeight: 700,
+                    fontSize: 16,
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {loading ? 'Aguarde…' : mode === 'login' ? 'Entrar e continuar →' : 'Criar conta →'}
+                </button>
+              )}
+            </div>
 
-              <div className="mt-4 text-center text-sm text-gray-600">
+            {status !== 'authenticated' && (
+              <p
+                style={{
+                  textAlign: 'center',
+                  fontSize: 13,
+                  color: 'var(--fg-2)',
+                  marginTop: 14,
+                }}
+              >
                 {mode === 'login' ? (
                   <>
                     Não tem conta?{' '}
                     <button
                       onClick={() => setMode('register')}
-                      className="text-amber-700 font-semibold hover:underline cursor-pointer"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--fdc-tangerine)',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontSize: 13,
+                      }}
                     >
                       Criar conta
                     </button>
@@ -231,15 +528,165 @@ export default function CheckoutPage() {
                     Já tem conta?{' '}
                     <button
                       onClick={() => setMode('login')}
-                      className="text-amber-700 font-semibold hover:underline cursor-pointer"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--fdc-tangerine)',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontSize: 13,
+                      }}
                     >
                       Entrar
                     </button>
                   </>
                 )}
+              </p>
+            )}
+          </div>
+
+          {/* RIGHT col — order summary */}
+          <div style={{ position: 'sticky', top: 24 }}>
+            <div className="fdc-card" style={{ padding: 24 }}>
+              {/* Event mini header */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 12,
+                  paddingBottom: 14,
+                  borderBottom: '1px solid var(--line-2)',
+                  marginBottom: 14,
+                }}
+              >
+                <div
+                  style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: 10,
+                    background:
+                      'linear-gradient(135deg, var(--fdc-tangerine-soft), var(--fdc-cream-deep))',
+                    flexShrink: 0,
+                  }}
+                />
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 15,
+                      lineHeight: 1.2,
+                      color: 'var(--fg-1)',
+                    }}
+                  >
+                    Arraiá da Escola
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--fg-2)', marginTop: 2 }}>
+                    Seus ingressos
+                  </div>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div style={{ borderBottom: '1px solid var(--line-2)', paddingBottom: 14, marginBottom: 14 }}>
+                {items.map((item) => (
+                  <div
+                    key={item.ticketTypeId}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      padding: '6px 0',
+                      fontSize: 14,
+                    }}
+                  >
+                    <span style={{ color: 'var(--fg-2)' }}>
+                      {item.quantity}× {item.name}
+                    </span>
+                    <span style={{ fontWeight: 500, color: 'var(--fg-1)' }}>
+                      {item.price === 0
+                        ? '—'
+                        : 'R$ ' + ((item.price * item.quantity) / 100).toFixed(2).replace('.', ',')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Fee */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>Subtotal</span>
+                  <span style={{ fontSize: 14, fontWeight: 500 }}>{totalFormatted}</span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: 'var(--fg-2)' }}>
+                    Taxa do serviço{' '}
+                    <em
+                      style={{
+                        color: 'var(--fdc-leaf-deep)',
+                        fontStyle: 'normal',
+                        marginLeft: 4,
+                      }}
+                    >
+                      · grátis no PIX
+                    </em>
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 500 }}>R$ 0,00</span>
+                </div>
+              </div>
+
+              {/* Total */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  borderTop: '1.5px dashed var(--line-2)',
+                  paddingTop: 14,
+                }}
+              >
+                <span style={{ fontWeight: 600 }}>Total</span>
+                <span
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    letterSpacing: '-0.01em',
+                    color: 'var(--fg-1)',
+                  }}
+                >
+                  {totalFormatted}
+                </span>
               </div>
             </div>
-          )}
+
+            {/* Info note */}
+            <div
+              style={{
+                marginTop: 12,
+                padding: '12px 14px',
+                background: 'var(--fdc-cream-deep)',
+                borderRadius: 12,
+                fontSize: 13,
+                color: 'var(--fg-2)',
+                display: 'flex',
+                gap: 10,
+                alignItems: 'flex-start',
+              }}
+            >
+              <span style={{ fontSize: 15 }}>ℹ️</span>
+              <span>Você terá 15 minutos para concluir o pagamento depois de avançar.</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

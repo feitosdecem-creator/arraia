@@ -2,6 +2,7 @@
 
 import { useCart } from './CartProvider'
 import { useState } from 'react'
+import Link from 'next/link'
 
 type TicketTypeCardProps = {
   ticketTypeId: string
@@ -20,68 +21,219 @@ export function TicketTypeCard({
   stock,
   sold,
 }: TicketTypeCardProps) {
-  const { addItem, items } = useCart()
-  const [added, setAdded] = useState(false)
+  const { addItem, removeItem, updateQuantity, items } = useCart()
   const remaining = stock - sold
-  const inCart = items.find((i) => i.ticketTypeId === ticketTypeId)
+  const cartItem = items.find((i) => i.ticketTypeId === ticketTypeId)
+  const qty = cartItem?.quantity ?? 0
   const isSoldOut = remaining <= 0
 
-  const handleAdd = () => {
-    if (isSoldOut) return
-    addItem({
-      ticketTypeId,
-      name,
-      price,
-    })
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1500)
+  const priceFormatted =
+    price === 0
+      ? 'Gratuito'
+      : 'R$ ' + (price / 100).toFixed(2).replace('.', ',')
+
+  const handleDec = () => {
+    if (qty <= 1) {
+      removeItem(ticketTypeId)
+    } else {
+      updateQuantity(ticketTypeId, qty - 1)
+    }
   }
 
-  const priceFormatted = (price / 100).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
+  const handleInc = () => {
+    if (isSoldOut) return
+    if (qty === 0) {
+      addItem({ ticketTypeId, name, price })
+    } else {
+      updateQuantity(ticketTypeId, qty + 1)
+    }
+  }
 
   return (
-    <div className="bg-white border-2 border-amber-200 rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="text-lg font-bold text-amber-900">{name}</h3>
-        <span className="text-2xl font-bold text-red-700">{priceFormatted}</span>
-      </div>
-
-      {description && <p className="text-gray-600 text-sm mb-4">{description}</p>}
-
-      <div className="flex items-center justify-between">
-        <div className="text-sm">
-          {isSoldOut ? (
-            <span className="text-red-600 font-semibold">Esgotado</span>
-          ) : (
-            <span className={`${remaining < 20 ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
-              {remaining < 20 ? `⚠️ Apenas ${remaining} restantes!` : `${remaining} disponíveis`}
-            </span>
+    <div
+      style={{
+        padding: '18px 0',
+        borderBottom: '1px solid var(--line-2)',
+      }}
+    >
+      {/* Top row: name + price */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 12,
+          alignItems: 'baseline',
+          marginBottom: 4,
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: 16,
+              marginBottom: 2,
+              color: 'var(--fg-1)',
+            }}
+          >
+            {name}
+          </div>
+          {description && (
+            <div style={{ fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.4 }}>
+              {description}
+            </div>
           )}
         </div>
-
-        {inCart && (
-          <span className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
-            {inCart.quantity} no carrinho
-          </span>
-        )}
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 17,
+              color: price === 0 ? 'var(--fdc-leaf-deep)' : 'var(--fg-1)',
+            }}
+          >
+            {priceFormatted}
+          </div>
+        </div>
       </div>
 
-      <button
-        onClick={handleAdd}
-        disabled={isSoldOut}
-        className={`mt-4 w-full py-2 rounded-xl font-semibold transition-all text-sm ${
-          isSoldOut
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : added
-            ? 'bg-green-600 text-white'
-            : 'bg-amber-500 hover:bg-amber-600 text-white cursor-pointer'
-        }`}
+      {/* Bottom row: availability + stepper */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 10,
+        }}
       >
-        {isSoldOut ? 'Esgotado' : added ? '✓ Adicionado!' : 'Adicionar ao Carrinho'}
-      </button>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: isSoldOut
+              ? 'var(--fdc-danger)'
+              : remaining < 20
+              ? 'var(--fdc-sun-deep)'
+              : 'var(--fdc-leaf-deep)',
+          }}
+        >
+          {isSoldOut
+            ? 'Esgotado'
+            : remaining < 20
+            ? `⚠ Apenas ${remaining} restantes`
+            : `1º lote · até ${remaining} disponíveis`}
+        </span>
+
+        {/* Quantity stepper */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              border: '1px solid var(--line-2)',
+              background: 'var(--bg-surface)',
+              color: qty === 0 ? 'var(--fg-3)' : 'var(--fg-1)',
+              display: 'grid',
+              placeItems: 'center',
+              cursor: qty === 0 ? 'default' : 'pointer',
+              fontSize: 18,
+              lineHeight: 1,
+            }}
+            onClick={handleDec}
+            disabled={qty === 0}
+            aria-label="Diminuir"
+          >
+            −
+          </button>
+          <span
+            style={{
+              minWidth: 16,
+              textAlign: 'center',
+              fontWeight: 600,
+              fontSize: 16,
+              color: 'var(--fg-1)',
+            }}
+          >
+            {qty}
+          </span>
+          <button
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              border: `1px solid ${qty > 0 ? 'var(--fdc-tangerine)' : 'var(--line-2)'}`,
+              background: 'var(--bg-surface)',
+              color: qty > 0 ? 'var(--fdc-tangerine)' : isSoldOut ? 'var(--fg-3)' : 'var(--fg-1)',
+              display: 'grid',
+              placeItems: 'center',
+              cursor: isSoldOut ? 'not-allowed' : 'pointer',
+              fontSize: 18,
+              lineHeight: 1,
+            }}
+            onClick={handleInc}
+            disabled={isSoldOut}
+            aria-label="Aumentar"
+          >
+            +
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Also export a CartCheckoutBar for use in the evento page
+export function CartCheckoutBar() {
+  const { items, total, itemCount } = useCart()
+
+  if (itemCount === 0) return null
+
+  const totalFormatted = 'R$ ' + (total / 100).toFixed(2).replace('.', ',')
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'var(--bg-surface)',
+        borderTop: '1px solid var(--line-2)',
+        padding: '12px 24px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+        zIndex: 40,
+        boxShadow: '0 -4px 20px rgba(56,48,48,0.08)',
+      }}
+    >
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--fg-3)' }}>
+          {itemCount} {itemCount === 1 ? 'ingresso' : 'ingressos'}
+        </div>
+        <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em' }}>
+          {totalFormatted}
+        </div>
+      </div>
+      <Link
+        href="/checkout"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '13px 28px',
+          borderRadius: 'var(--radius-lg)',
+          background: 'var(--fdc-tangerine)',
+          color: 'var(--fdc-cream)',
+          fontWeight: 700,
+          fontSize: 16,
+          textDecoration: 'none',
+          boxShadow: 'var(--shadow-md)',
+        }}
+      >
+        Continuar para pagamento →
+      </Link>
     </div>
   )
 }
