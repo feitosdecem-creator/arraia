@@ -19,6 +19,7 @@ export function Sidebar() {
 
   return (
     <aside
+      className="admin-sidebar"
       style={{
         width: 220,
         background: 'var(--bg-surface)',
@@ -31,6 +32,7 @@ export function Sidebar() {
     >
       {/* Brand / event name */}
       <div
+        className="admin-sidebar-brand"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -64,7 +66,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav links */}
-      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <nav className="admin-sidebar-nav" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {links.map((link) => {
           const isActive =
             pathname === link.href || pathname.startsWith(link.href + '/')
@@ -94,7 +96,7 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div style={{ paddingTop: 16, borderTop: '1px solid var(--line-2)' }}>
+      <div className="admin-sidebar-logout" style={{ paddingTop: 16, borderTop: '1px solid var(--line-2)' }}>
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
           style={{

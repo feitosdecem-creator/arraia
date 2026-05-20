@@ -62,6 +62,7 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
@@ -101,6 +102,7 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
             ))}
           </tbody>
         </table>
+        </div>
         {tickets.length === 0 && (
           <p className="text-center text-gray-400 py-10">Nenhum ingresso encontrado.</p>
         )}

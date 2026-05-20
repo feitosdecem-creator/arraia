@@ -168,8 +168,19 @@
 }
 
 /* ============================================================
+   BOX SIZING — apply globally
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ============================================================
    DEFAULT BODY STYLES
    ============================================================ */
+html {
+  overflow-x: hidden;
+}
+
 html, body {
   background: var(--bg-page);
   color: var(--fg-1);
@@ -179,6 +190,13 @@ html, body {
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  word-break: break-word;
+}
+
+img, video, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ============================================================
@@ -392,6 +410,11 @@ html, body {
    RESPONSIVE — Mobile breakpoints
    ============================================================ */
 @media (max-width: 768px) {
+  /* Reduce container padding globally on mobile */
+  :root {
+    --container-pad: 16px;
+  }
+
   /* Public evento page */
   .evento-grid {
     grid-template-columns: 1fr !important;
@@ -399,6 +422,12 @@ html, body {
   .evento-grid .evento-tickets {
     order: -1;
     position: static !important;
+  }
+  .evento-hero {
+    padding: 28px 20px 24px !important;
+  }
+  .evento-inclusions-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Checkout page */
@@ -411,6 +440,17 @@ html, body {
   .checkout-summary {
     order: -1;
     position: static !important;
+  }
+  .checkout-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .checkout-actions .checkout-btn-proceed {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .checkout-form-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Pagamento page */
@@ -426,15 +466,89 @@ html, body {
     border-right: none !important;
     border-bottom: 1px solid var(--line-2);
   }
+  .pix-copy-row {
+    flex-direction: column !important;
+  }
+  .pix-copy-row button {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 11px 16px !important;
+  }
 
   /* Admin dashboard metrics */
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
+  /* Admin layout */
+  .admin-shell {
+    flex-direction: column !important;
+  }
+  .admin-sidebar {
+    width: 100% !important;
+    min-height: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--line-2) !important;
+    padding: 12px 8px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+  }
+  .admin-sidebar-brand {
+    display: none !important;
+  }
+  .admin-sidebar-nav {
+    flex-direction: row !important;
+    gap: 4px !important;
+    flex: none !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+  }
+  .admin-sidebar-nav a {
+    white-space: nowrap !important;
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+  .admin-sidebar-logout {
+    display: none !important;
+  }
+  .admin-main {
+    padding: 16px !important;
+    overflow: auto !important;
+  }
+
+  /* Admin tables — scrollable wrappers */
+  .admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-table-wrap table {
+    min-width: 540px;
+  }
+
   /* Container padding */
   .container-pad-mobile {
     padding-left: 16px !important;
     padding-right: 16px !important;
+  }
+
+  /* Navbar */
+  .navbar-inner {
+    padding: 0 12px !important;
+    gap: 8px !important;
+  }
+  .navbar-nav {
+    gap: 0 !important;
+  }
+  .navbar-nav-link {
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+  }
+  .navbar-auth {
+    gap: 4px !important;
+  }
+  .navbar-auth-label {
+    display: none !important;
   }
 }

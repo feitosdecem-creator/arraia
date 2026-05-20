@@ -32,6 +32,7 @@ export default async function TiposPage() {
       )}
 
       <div className="fdc-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
             <tr style={{ background: 'var(--bg-sunken)' }}>
@@ -74,6 +75,7 @@ export default async function TiposPage() {
             })}
           </tbody>
         </table>
+        </div>
         {ticketTypes.length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--fg-3)', fontSize: 15 }}>
             Nenhum tipo de ingresso cadastrado.

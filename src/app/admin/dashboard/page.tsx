@@ -257,7 +257,7 @@ export default async function DashboardPage() {
           className="fdc-card"
           style={{ padding: 0, overflow: 'hidden' }}
         >
-          <div style={{ overflowX: 'auto' }}>
+          <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'var(--bg-sunken)' }}>
