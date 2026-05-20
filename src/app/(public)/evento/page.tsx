@@ -134,11 +134,18 @@ export default async function EventoPage() {
         </div>
 
         {/* Main 2-col layout */}
+        <style>{`
+          @media (max-width: 768px) {
+            .evento-grid { grid-template-columns: 1fr !important; }
+            .evento-grid .evento-tickets { order: -1; }
+          }
+        `}</style>
         <div
+          className="evento-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1fr) 360px',
-            gap: 40,
+            gap: 32,
             alignItems: 'start',
           }}
         >
@@ -224,7 +231,7 @@ export default async function EventoPage() {
           </div>
 
           {/* Right — tickets sticky */}
-          <div style={{ position: 'sticky', top: 24 }}>
+          <div className="evento-tickets" style={{ position: 'sticky', top: 24 }}>
             <div
               className="fdc-card"
               style={{ padding: 24 }}
