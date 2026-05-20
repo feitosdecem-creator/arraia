@@ -155,34 +155,6 @@ export default async function EventoPage() {
             </div>
           </div>
 
-          {/* Price cards */}
-          <div className="pricing-cards-grid">
-
-            {/* Inteira */}
-            <div className="pricing-card pricing-card-primary">
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.02em', textTransform: 'uppercase' as const }}>Inteira</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: '10px 0 4px' }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', paddingBottom: 5 }}>R$</span>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 48, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>18</span>
-              </div>
-              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, lineHeight: 1.5 }}>
-                Acesso completo ao evento
-              </p>
-            </div>
-
-            {/* Meia-entrada */}
-            <div className="pricing-card">
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.02em', textTransform: 'uppercase' as const }}>Meia-entrada</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: '10px 0 4px' }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', paddingBottom: 5 }}>R$</span>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 48, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>10</span>
-              </div>
-              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, lineHeight: 1.5 }}>
-                Válido mediante comprovação
-              </p>
-            </div>
-          </div>
-
           {/* Student notice */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 18px', background: 'rgba(74,138,56,0.05)', borderRadius: 14, border: '1px solid rgba(74,138,56,0.13)' }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
@@ -190,7 +162,7 @@ export default async function EventoPage() {
               <path d="M5.5 9l2.5 2.5 5-5" stroke="#3a7527" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <p style={{ margin: 0, fontSize: 13, color: '#2d5a1a', lineHeight: 1.6 }}>
-              Alunos da <strong>Quintal Escola Feitos de Cem</strong> têm entrada gratuita — não é necessário adquirir ingresso.
+              Crianças do <strong>Quintal</strong> entram de graça — adultos acompanhantes precisam de ingresso.
             </p>
           </div>
         </section>
