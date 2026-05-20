@@ -57,7 +57,7 @@ export default async function MeusIngressosPage() {
         })),
       }
     })
-    .filter((o): o is NonNullable<typeof o> => o !== null)
+    .filter(Boolean) as Parameters<typeof MeusIngressosShell>[0]['orders']
 
   return (
     <MeusIngressosShell
