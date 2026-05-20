@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { notFound } from 'next/navigation'
-import { TicketTypeCard } from '@/components/TicketTypeCard'
+import { TicketTypeCard, CartCheckoutBar } from '@/components/TicketTypeCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -293,6 +293,7 @@ export default async function EventoPage() {
           </div>
         </div>
       </div>
+      <CartCheckoutBar />
     </div>
   )
 }
