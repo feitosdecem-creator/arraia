@@ -88,6 +88,12 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '60vh', padding: '8px 0 40px' }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .pix-card { grid-template-columns: 1fr !important; }
+          .pix-qr { border-right: none !important; border-bottom: 1px solid var(--line-2); }
+        }
+      `}</style>
       {/* Pending badge */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
         <div
@@ -118,7 +124,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       </div>
 
       <div
-        className="fdc-card"
+        className="fdc-card pix-card"
         style={{
           padding: 0,
           overflow: 'hidden',
@@ -130,6 +136,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       >
         {/* QR Code */}
         <div
+          className="pix-qr"
           style={{
             padding: 32,
             borderRight: '1px solid var(--line-2)',

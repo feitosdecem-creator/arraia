@@ -126,6 +126,11 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <style>{`
+        @media (max-width: 640px) {
+          .metrics-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
       {/* Page header */}
       <div
         style={{
@@ -176,6 +181,7 @@ export default async function DashboardPage() {
 
       {/* Metrics grid */}
       <div
+        className="metrics-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
