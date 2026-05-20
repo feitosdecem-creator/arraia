@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { nanoid } from 'nanoid'
@@ -12,6 +13,11 @@ type Props = { params: Promise<{ orderId: string }> }
 
 export async function POST(_req: NextRequest, { params }: Props) {
   try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
     const { orderId } = await params
 
     const order = await prisma.order.findUnique({
@@ -21,6 +27,11 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     if (!order) {
       return NextResponse.json({ error: 'Pedido não encontrado' }, { status: 404 })
+    }
+
+    // Verifica que o pedido pertence ao usuário logado (ou é admin)
+    if (order.userId !== session.user.id && !session.user.isAdmin) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
     }
 
     // Already paid — nothing to do

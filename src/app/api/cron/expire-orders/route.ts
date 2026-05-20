@@ -1,9 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // O Vercel injeta automaticamente Authorization: Bearer {CRON_SECRET}
+  // quando chama crons configurados em vercel.json
+  const authHeader = req.headers.get('authorization')
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
-    // Find expired orders
     const expiredOrders = await prisma.order.findMany({
       where: {
         status: 'AWAITING_PAYMENT',
@@ -16,10 +22,8 @@ export async function GET() {
       return NextResponse.json({ expired: 0 })
     }
 
-    // Process each expired order
     for (const order of expiredOrders) {
       await prisma.$transaction(async (tx) => {
-        // Return stock for each item
         for (const item of order.items) {
           await tx.$executeRaw`
             UPDATE ticket_types
@@ -27,8 +31,6 @@ export async function GET() {
             WHERE id = ${item.ticketTypeId}
           `
         }
-
-        // Mark order as expired
         await tx.order.update({
           where: { id: order.id },
           data: { status: 'EXPIRED' },
