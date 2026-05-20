@@ -1,17 +1,226 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ============================================================
+   FEITOS DE CEM — HeyWow font faces
+   ============================================================ */
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 300; src: url('/fonts/HeyWowLight.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 400; src: url('/fonts/HeyWowBook.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 450; src: url('/fonts/HeyWowRegular.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 500; src: url('/fonts/HeyWowMedium.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 600; src: url('/fonts/HeyWowSemiBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 700; src: url('/fonts/HeyWowBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 800; src: url('/fonts/HeyWowExtraBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'HeyWow'; font-style: normal; font-weight: 900; src: url('/fonts/HeyWowHeavy.ttf') format('truetype'); font-display: swap; }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ============================================================
+     COLORS — Brand foundation
+     ============================================================ */
+
+  /* Neutrals */
+  --fdc-ink:        #383030;
+  --fdc-ink-deep:   #231D1D;
+  --fdc-cream:      #FDFAF5;
+  --fdc-cream-deep: #F6F0E5;
+  --fdc-sand:       #EFE6D5;
+  --fdc-stone:      #707070;
+  --fdc-stone-1:    #9E9D9C;
+  --fdc-stone-2:    #D6D6D6;
+  --fdc-stone-3:    #F2F2F2;
+  --fdc-white:      #FFFFFF;
+
+  /* Brand */
+  --fdc-tangerine:      #EC5212;
+  --fdc-tangerine-soft: #FFA37C;
+  --fdc-tangerine-deep: #C4400A;
+
+  --fdc-sun:        #F4B73B;
+  --fdc-sun-soft:   #FFD37D;
+  --fdc-sun-deep:   #D89A1F;
+
+  --fdc-leaf:       #6FA84A;
+  --fdc-leaf-soft:  #A8CC85;
+  --fdc-leaf-deep:  #4E7E2F;
+
+  --fdc-sage:       #77C6B3;
+  --fdc-sage-soft:  #B5DDD0;
+  --fdc-sage-deep:  #4F9E89;
+
+  --fdc-indigo:     #3658D3;
+  --fdc-indigo-soft:#70A2E1;
+  --fdc-indigo-deep:#1E3AA8;
+
+  --fdc-coral:      #FF8787;
+  --fdc-blush:      #FFBABA;
+
+  /* Semantic */
+  --fdc-success: var(--fdc-leaf);
+  --fdc-warning: var(--fdc-sun-deep);
+  --fdc-danger:  #D83838;
+  --fdc-info:    var(--fdc-indigo);
+
+  /* Semantic fg/bg */
+  --fg-1: var(--fdc-ink);
+  --fg-2: var(--fdc-stone);
+  --fg-3: var(--fdc-stone-1);
+  --fg-on-color: var(--fdc-cream);
+
+  --bg-page:    var(--fdc-cream);
+  --bg-surface: var(--fdc-white);
+  --bg-sunken:  var(--fdc-cream-deep);
+  --bg-tonal:   var(--fdc-sand);
+
+  --line-1: var(--fdc-stone-2);
+  --line-2: rgba(56,48,48,0.12);
+
+  --link:       var(--fdc-tangerine);
+  --link-hover: var(--fdc-tangerine-deep);
+
+  /* Accent shortcuts (used by design components) */
+  --accent:       var(--fdc-tangerine);
+  --accent-soft:  var(--fdc-tangerine-soft);
+  --accent-deep:  var(--fdc-tangerine-deep);
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  --font-sans:    'HeyWow', system-ui, -apple-system, sans-serif;
+  --font-display: 'HeyWow', system-ui, sans-serif;
+  --font-hand:    'Caveat', 'Caveat Brush', cursive;
+  --font-serif:   'Fraunces', Georgia, serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --t-base:  18px;
+  --t-xs:    13px;
+  --t-sm:    16px;
+  --t-md:    18px;
+  --t-lg:    22px;
+  --t-xl:    28px;
+
+  --h-4xs:   28px;
+  --h-3xs:   34px;
+  --h-2xs:   42px;
+  --h-xs:    48px;
+  --h-sm:    56px;
+  --h-md:    64px;
+  --h-lg:    72px;
+  --h-xl:    80px;
+  --h-2xl:   96px;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --tracking-tight:  -0.03em;
+  --tracking-normal: 0;
+  --tracking-loose:   0.04em;
+  --tracking-caps:    0.12em;
+
+  --leading-tight:   1.0;
+  --leading-snug:    1.15;
+  --leading-normal:  1.46;
+  --leading-loose:   1.6;
+
+  /* ============================================================
+     SPACING / RADII / SHADOWS / MOTION
+     ============================================================ */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  --section-sm: 50px;
+  --section-md: 72px;
+  --section-lg: 98px;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-2xl: 32px;
+  --radius-pill: 999px;
+
+  --container-max: 1280px;
+  --container-pad: 40px;
+
+  --shadow-xs:  0 1px 2px rgba(56,48,48,0.06);
+  --shadow-sm:  0 2px 6px rgba(56,48,48,0.08);
+  --shadow-md:  0 8px 18px rgba(56,48,48,0.10);
+  --shadow-lg:  0 18px 32px rgba(56,48,48,0.12);
+  --shadow-sticker: 4px 4px 0 rgba(56,48,48,0.85);
+  --shadow-sticker-soft: 3px 3px 0 rgba(56,48,48,0.18);
+  --shadow-inner: inset 0 0 0 1px rgba(56,48,48,0.08);
+
+  --ease-out:    cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:   140ms;
+  --dur-base:   220ms;
+  --dur-slow:   360ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+/* ============================================================
+   DEFAULT BODY STYLES
+   ============================================================ */
+html, body {
+  background: var(--bg-page);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+/* ============================================================
+   FOCUS / SELECTION
+   ============================================================ */
+::selection {
+  background: var(--fdc-sun-soft);
+  color: var(--fdc-ink);
+}
+:focus-visible {
+  outline: 2px solid var(--fdc-tangerine);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   GRAIN / TEXTURE utility
+   ============================================================ */
+.fdc-grain {
+  position: relative;
+  isolation: isolate;
+}
+.fdc-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================================
+   SEMANTIC UTILITY CLASSES
+   ============================================================ */
+.fdc-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--t-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--fdc-tangerine);
 }
