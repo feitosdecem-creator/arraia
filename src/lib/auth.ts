@@ -2,8 +2,10 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { authConfig } from '../auth.config'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -16,7 +18,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = credentials.email as string
         const password = credentials.password as string
 
-        // Check admin credentials
         const adminEmail = process.env.ADMIN_EMAIL
         const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
         if (adminEmail && adminPasswordHash && email === adminEmail) {
@@ -30,7 +31,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
 
-        // Regular user login
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user) return null
 
@@ -46,26 +46,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false
-      }
-      return token
-    },
-    session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.isAdmin = token.isAdmin as boolean
-      }
-      return session
-    },
-  },
-  pages: {
-    signIn: '/checkout',
-  },
-  session: {
-    strategy: 'jwt',
-  },
 })
