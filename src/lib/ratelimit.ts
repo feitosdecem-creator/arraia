@@ -44,3 +44,11 @@ export function rateLimitIp(
 ): { allowed: boolean; retryAfterMs: number } {
   return check(`${scope}:${getIp(req)}`, limit, windowMs)
 }
+
+export function rateLimitKey(
+  key: string,
+  limit: number,
+  windowMs: number,
+): { allowed: boolean; retryAfterMs: number } {
+  return check(key, limit, windowMs)
+}

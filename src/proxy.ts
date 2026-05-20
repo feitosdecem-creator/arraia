@@ -6,11 +6,9 @@ export default auth((req) => {
   const isAuthenticated = !!req.auth
   const isAdmin = req.auth?.user?.isAdmin === true
 
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     if (!isAuthenticated) {
-      const url = new URL('/entrar', req.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL('/admin/login', req.url))
     }
     if (!isAdmin) return NextResponse.redirect(new URL('/', req.url))
   }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateTicketsPdf } from '@/lib/pdf'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
+import { rateLimitKey } from '@/lib/ratelimit'
 
 type Props = { params: Promise<{ orderId: string }> }
 
@@ -9,6 +10,11 @@ export async function GET(_req: NextRequest, { params }: Props) {
   try {
     const { orderId } = await params
     const session = await auth()
+
+    const { allowed } = rateLimitKey(`pdf:${orderId}`, 10, 60 * 60_000)
+    if (!allowed) {
+      return NextResponse.json({ error: 'Muitos downloads. Aguarde 1 hora.' }, { status: 429 })
+    }
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },

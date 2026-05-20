@@ -1,6 +1,11 @@
 import Link from 'next/link'
+import { auth } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-export default function PagamentoSucessoPage() {
+export default async function PagamentoSucessoPage() {
+  const session = await auth()
+  if (!session?.user?.id) redirect('/')
+
   return (
     <div className="max-w-md mx-auto px-4 py-20 text-center">
       <div className="text-7xl mb-6">🎉</div>

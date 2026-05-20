@@ -72,6 +72,7 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Tipo</th>
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Status</th>
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Emitido em</th>
+              <th className="text-left px-6 py-3 text-gray-500 font-medium">Validado por</th>
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Ações</th>
             </tr>
           </thead>
@@ -99,6 +100,12 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
                 </td>
                 <td className="px-6 py-4 text-xs text-gray-500">
                   {format(ticket.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                </td>
+                <td className="px-6 py-4 text-xs text-gray-500">
+                  {ticket.validatedBy
+                    ? <span className="font-mono">{ticket.validatedBy === 'admin' ? 'Admin' : ticket.validatedBy.slice(0, 8)}</span>
+                    : <span className="text-gray-300">—</span>
+                  }
                 </td>
                 <td className="px-6 py-4">
                   <DeleteTicketButton ticketId={ticket.id} isUsed={!!ticket.usedAt} />

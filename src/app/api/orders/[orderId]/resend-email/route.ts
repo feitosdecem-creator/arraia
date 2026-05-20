@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendTicketEmail } from '@/lib/email'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
+import { rateLimitKey } from '@/lib/ratelimit'
 
 type Props = { params: Promise<{ orderId: string }> }
 
@@ -9,6 +10,11 @@ export async function POST(_req: NextRequest, { params }: Props) {
   try {
     const { orderId } = await params
     const session = await auth()
+
+    const { allowed } = rateLimitKey(`resend-email:${orderId}`, 2, 60 * 60_000)
+    if (!allowed) {
+      return NextResponse.json({ error: 'E-mail já reenviado recentemente. Aguarde 1 hora.' }, { status: 429 })
+    }
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },

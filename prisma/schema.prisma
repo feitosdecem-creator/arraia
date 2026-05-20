@@ -98,6 +98,7 @@ model Ticket {
   ticketTypeId String
   code         String     @unique
   usedAt       DateTime?
+  validatedBy  String?
   createdAt    DateTime   @default(now())
   order        Order      @relation(fields: [orderId], references: [id])
   ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
