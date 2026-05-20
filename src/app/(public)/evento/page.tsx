@@ -159,30 +159,28 @@ export default async function EventoPage() {
           <div className="pricing-cards-grid">
 
             {/* Inteira */}
-            <a href="#ingressos" className="pricing-card pricing-card-primary">
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '-0.01em' }}>Inteira</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: '14px 0 6px' }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-3)', lineHeight: 1, paddingBottom: 6 }}>R$</span>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 54, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>18</span>
+            <div className="pricing-card pricing-card-primary">
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.02em', textTransform: 'uppercase' as const }}>Inteira</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: '10px 0 4px' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', paddingBottom: 5 }}>R$</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 48, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>18</span>
               </div>
-              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 auto', lineHeight: 1.55, paddingBottom: 20 }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, lineHeight: 1.5 }}>
                 Acesso completo ao evento
               </p>
-              <div className="pricing-btn pricing-btn-primary">Selecionar →</div>
-            </a>
+            </div>
 
             {/* Meia-entrada */}
-            <a href="#ingressos" className="pricing-card">
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '-0.01em' }}>Meia-entrada</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: '14px 0 6px' }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--fg-3)', lineHeight: 1, paddingBottom: 6 }}>R$</span>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 54, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>10</span>
+            <div className="pricing-card">
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '0.02em', textTransform: 'uppercase' as const }}>Meia-entrada</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: '10px 0 4px' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', paddingBottom: 5 }}>R$</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 48, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--fg-1)', lineHeight: 1 }}>10</span>
               </div>
-              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 auto', lineHeight: 1.55, paddingBottom: 20 }}>
+              <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: 0, lineHeight: 1.5 }}>
                 Válido mediante comprovação
               </p>
-              <div className="pricing-btn pricing-btn-ghost">Selecionar →</div>
-            </a>
+            </div>
           </div>
 
           {/* Student notice */}
