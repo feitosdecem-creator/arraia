@@ -5,6 +5,7 @@ import { SessionProvider } from 'next-auth/react'
 export const metadata: Metadata = {
   title: 'Arraiá nu Quintal 2',
   description: 'Compre seus ingressos para o maior arraiá da cidade!',
+  icons: { icon: '/logo-navicon.png' },
 }
 
 export default function RootLayout({

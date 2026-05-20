@@ -43,22 +43,11 @@ export function Navbar() {
             flexShrink: 0,
           }}
         >
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: 'var(--fdc-tangerine)',
-              color: 'var(--fdc-cream)',
-              display: 'grid',
-              placeItems: 'center',
-              fontWeight: 700,
-              fontSize: 16,
-            }}
-          >
-            A
-          </div>
-          <span className="navbar-brand-label" style={{ fontWeight: 600, fontSize: 15 }}>ingressos.app</span>
+          <img
+            src="/logo-navbar.svg"
+            alt="Arraiá nu Quintal 2"
+            style={{ height: 36, width: 'auto', display: 'block' }}
+          />
         </Link>
 
         {/* Nav links */}
