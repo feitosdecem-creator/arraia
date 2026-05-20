@@ -1,25 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(req: NextRequest) {
-  const email = req.nextUrl.searchParams.get('email')
-
-  if (!email) {
-    return NextResponse.json({ error: 'E-mail obrigatório' }, { status: 400 })
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-  })
-
-  if (!user) {
-    return NextResponse.json({ tickets: [] })
+export async function GET() {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
   const tickets = await prisma.ticket.findMany({
     where: {
       order: {
-        userId: user.id,
+        userId: session.user.id,
         status: 'PAID',
       },
     },

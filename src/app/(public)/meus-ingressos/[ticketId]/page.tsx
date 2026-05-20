@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { generateQrCode } from '@/lib/qrcode'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -12,6 +13,9 @@ export const dynamic = 'force-dynamic'
 type Props = { params: Promise<{ ticketId: string }> }
 
 export default async function TicketPage({ params }: Props) {
+  const session = await auth()
+  if (!session?.user?.id) redirect('/entrar')
+
   const { ticketId } = await params
 
   const ticket = await prisma.ticket.findUnique({
@@ -33,6 +37,11 @@ export default async function TicketPage({ params }: Props) {
   })
 
   if (!ticket) return notFound()
+
+  // Verifica que o ingresso pertence ao usuário logado (ou é admin)
+  if (ticket.order.userId !== session.user.id && !session.user.isAdmin) {
+    redirect('/meus-ingressos')
+  }
 
   const qrCode = await generateQrCode(ticket.code)
   const { event } = ticket.ticketType

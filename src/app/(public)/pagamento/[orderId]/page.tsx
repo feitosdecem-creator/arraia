@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { PixPayment } from '@/components/PixPayment'
 
 export const dynamic = 'force-dynamic'
@@ -55,6 +56,9 @@ function StepBar({ step }: { step: number }) {
 }
 
 export default async function PagamentoPage({ params }: Props) {
+  const session = await auth()
+  if (!session?.user?.id) redirect('/entrar')
+
   const { orderId } = await params
 
   const order = await prisma.order.findUnique({
@@ -62,6 +66,11 @@ export default async function PagamentoPage({ params }: Props) {
   })
 
   if (!order) return notFound()
+
+  // Verifica que o pedido pertence ao usuário logado (ou é admin)
+  if (order.userId !== session.user.id && !session.user.isAdmin) {
+    redirect('/meus-ingressos')
+  }
 
   if (order.status === 'PAID') {
     redirect('/pagamento/sucesso')
