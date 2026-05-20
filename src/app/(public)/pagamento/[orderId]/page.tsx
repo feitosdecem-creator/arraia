@@ -99,6 +99,7 @@ export default async function PagamentoPage({ params }: Props) {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <div
+        className="pagamento-outer"
         style={{
           maxWidth: 1100,
           margin: '0 auto',

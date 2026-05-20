@@ -176,6 +176,7 @@ export default async function DashboardPage() {
 
       {/* Metrics grid */}
       <div
+        className="metrics-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',

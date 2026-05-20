@@ -262,6 +262,7 @@ export default function CheckoutPage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <div
+        className="checkout-outer"
         style={{
           maxWidth: 1100,
           margin: '0 auto',
@@ -274,6 +275,7 @@ export default function CheckoutPage() {
         </div>
 
         <div
+          className="checkout-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1fr) 380px',
@@ -546,7 +548,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* RIGHT col — order summary */}
-          <div style={{ position: 'sticky', top: 24 }}>
+          <div className="checkout-summary" style={{ position: 'sticky', top: 24 }}>
             <div className="fdc-card" style={{ padding: 24 }}>
               {/* Event mini header */}
               <div

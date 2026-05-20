@@ -118,7 +118,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       </div>
 
       <div
-        className="fdc-card"
+        className="fdc-card pix-card"
         style={{
           padding: 0,
           overflow: 'hidden',
@@ -130,6 +130,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       >
         {/* QR Code */}
         <div
+          className="pix-qr"
           style={{
             padding: 32,
             borderRight: '1px solid var(--line-2)',
