@@ -165,14 +165,6 @@ function EventCard({ order, onShare, shared }: { order: OrderData; onShare: () =
                 <><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="10" cy="2.5" r="1.5" stroke="currentColor" strokeWidth="1.3"/><circle cx="10" cy="10.5" r="1.5" stroke="currentColor" strokeWidth="1.3"/><circle cx="2.5" cy="6.5" r="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8.5 3.3l-4.5 2.3M8.5 9.7L4 7.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg> Compartilhar</>
               )}
             </button>
-            <a
-              href={`/api/orders/${order.id}/pdf`}
-              download
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, border: '1.5px solid #e8e2da', background: 'transparent', fontSize: 13, fontWeight: 600, color: '#6b5f56', textDecoration: 'none', transition: 'all 140ms' }}
-            >
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M4 6.5h5M4 4.5h3M4 8.5h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-              Carteira
-            </a>
           </div>
         </div>
       </div>
