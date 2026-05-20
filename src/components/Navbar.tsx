@@ -157,7 +157,7 @@ export function Navbar() {
           ) : (
             <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link
-                href="/checkout"
+                href="/entrar"
                 style={{
                   padding: '6px 14px',
                   borderRadius: 8,

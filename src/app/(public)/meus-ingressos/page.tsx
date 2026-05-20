@@ -11,7 +11,7 @@ export default async function MeusIngressosPage() {
   const session = await auth()
 
   if (!session?.user?.id || session.user.id === 'admin') {
-    redirect('/checkout')
+    redirect('/entrar?callbackUrl=/meus-ingressos')
   }
 
   const orders = await prisma.order.findMany({
