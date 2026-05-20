@@ -16,7 +16,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = credentials.email as string
         const password = credentials.password as string
 
-        // Check admin credentials
         const adminEmail = process.env.ADMIN_EMAIL
         const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH
         if (adminEmail && adminPasswordHash && email === adminEmail) {
@@ -30,7 +29,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
 
-        // Regular user login
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user) return null
 
