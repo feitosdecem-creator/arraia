@@ -109,18 +109,10 @@ export function TicketTypeCard({
           style={{
             fontSize: 12,
             fontWeight: 500,
-            color: isSoldOut
-              ? 'var(--fdc-danger)'
-              : remaining < 20
-              ? 'var(--fdc-sun-deep)'
-              : 'var(--fdc-leaf-deep)',
+            color: isSoldOut ? 'var(--fdc-danger)' : 'var(--fdc-leaf-deep)',
           }}
         >
-          {isSoldOut
-            ? 'Esgotado'
-            : remaining < 20
-            ? `⚠ Apenas ${remaining} restantes`
-            : `1º lote · até ${remaining} disponíveis`}
+          {isSoldOut ? 'Esgotado' : 'Disponível'}
         </span>
 
         {/* Quantity stepper */}
