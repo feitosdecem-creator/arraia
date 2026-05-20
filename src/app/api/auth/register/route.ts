@@ -7,7 +7,7 @@ import { rateLimitIp } from '@/lib/ratelimit'
 const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(8, 'A senha deve ter ao menos 8 caracteres'),
 })
 
 export async function POST(req: NextRequest) {
@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const parsed = schema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
+      const firstError = parsed.error.issues[0]?.message ?? 'Dados inválidos'
+      return NextResponse.json({ error: firstError }, { status: 400 })
     }
 
     const { name, email, password } = parsed.data

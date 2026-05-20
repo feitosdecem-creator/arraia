@@ -1,3 +1,9 @@
+// JWT strategy (stateless): tokens are signed with AUTH_SECRET and stored
+// in an HttpOnly cookie. Sessions cannot be revoked server-side without
+// rotating AUTH_SECRET (which invalidates all active sessions at once).
+// maxAge=7d + updateAge=24h: tokens expire after 7 days of inactivity
+// and are silently refreshed every 24h of active use.
+// In an emergency (compromised token), rotate AUTH_SECRET in Vercel env vars.
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'

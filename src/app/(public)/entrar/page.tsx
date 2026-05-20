@@ -177,9 +177,9 @@ function LoginForm() {
           </label>
           <input ref={passwordRef} type="password" value={password} onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••" autoComplete={step === 'login' ? 'current-password' : 'new-password'}
-            minLength={6} required style={inp} />
+            minLength={8} required style={inp} />
           {step === 'register' && (
-            <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '5px 0 0' }}>Mínimo 6 caracteres</p>
+            <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '5px 0 0' }}>Mínimo 8 caracteres</p>
           )}
         </div>
       )}
