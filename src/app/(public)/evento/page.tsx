@@ -162,7 +162,7 @@ export default async function EventoPage() {
               <path d="M5.5 9l2.5 2.5 5-5" stroke="#3a7527" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <p style={{ margin: 0, fontSize: 13, color: '#2d5a1a', lineHeight: 1.6 }}>
-              Crianças do <strong>Quintal</strong> entram de graça — adultos acompanhantes precisam de ingresso.
+              Crianças do <strong>Quintal</strong> não precisam comprar ingresso — adultos acompanhantes sim.
             </p>
           </div>
         </section>
