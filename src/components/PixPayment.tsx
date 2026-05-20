@@ -26,6 +26,8 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
+  const [syncing, setSyncing] = useState(false)
+  const [syncMsg, setSyncMsg] = useState('')
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -48,9 +50,31 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
         const data = await res.json()
         if (data.status === 'PAID') router.push('/pagamento/sucesso')
       } catch { /* ignore */ }
-    }, 3000)
+    }, 4000)
     return () => { if (pollRef.current) clearInterval(pollRef.current) }
   }, [orderId, router])
+
+  const handleSync = async () => {
+    setSyncing(true)
+    setSyncMsg('')
+    try {
+      const res = await fetch(`/api/orders/${orderId}/sync`, { method: 'POST' })
+      const data = await res.json()
+      if (data.status === 'PAID') {
+        router.push('/pagamento/sucesso')
+        return
+      }
+      setSyncMsg(
+        data.mpStatus
+          ? `Status no Mercado Pago: ${data.mpStatus}. Aguarde alguns instantes.`
+          : 'Pagamento ainda não confirmado. Aguarde e tente novamente.'
+      )
+    } catch {
+      setSyncMsg('Erro ao verificar. Tente novamente.')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(pixQrCodeText).then(() => {
@@ -144,6 +168,27 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
           <div style={{ padding: '12px 14px', background: 'rgba(111,168,74,0.08)', borderRadius: 10, fontSize: 13, color: 'var(--fdc-leaf-deep)', display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>🔒</span>
             <span>Esta página atualiza automaticamente após o pagamento.</span>
+          </div>
+
+          {/* Manual sync fallback */}
+          <div style={{ borderTop: '1px solid var(--line-2)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: 0 }}>
+              Já pagou mas a página não atualizou?
+            </p>
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', borderRadius: 10, border: '1.5px solid var(--line-1)', background: 'var(--bg-surface)', color: syncing ? 'var(--fg-3)' : 'var(--fg-1)', fontWeight: 600, fontSize: 13, cursor: syncing ? 'not-allowed' : 'pointer', transition: 'all 140ms', fontFamily: 'inherit' }}
+            >
+              {syncing
+                ? <><span className="auth-spinner" style={{ borderTopColor: 'var(--fg-2)', borderColor: 'var(--line-2)' }} /> Verificando…</>
+                : '🔄 Verificar pagamento'}
+            </button>
+            {syncMsg && (
+              <p style={{ fontSize: 12, color: 'var(--fg-2)', margin: 0, textAlign: 'center' }}>
+                {syncMsg}
+              </p>
+            )}
           </div>
         </div>
       </div>

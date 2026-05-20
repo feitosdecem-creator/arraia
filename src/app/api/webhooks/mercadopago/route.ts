@@ -11,7 +11,11 @@ const client = new MercadoPagoConfig({
 
 function validateSignature(req: NextRequest, rawBody: string): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
-  if (!secret) return false
+  if (!secret) {
+    // Secret not configured — log warning but allow in development
+    console.warn('[webhook] MERCADOPAGO_WEBHOOK_SECRET not set — skipping signature check')
+    return process.env.NODE_ENV !== 'production'
+  }
 
   const xSignature = req.headers.get('x-signature') ?? ''
   const xRequestId = req.headers.get('x-request-id') ?? ''
@@ -22,7 +26,10 @@ function validateSignature(req: NextRequest, rawBody: string): boolean {
   )
   const ts = parts['ts']
   const v1 = parts['v1']
-  if (!ts || !v1) return false
+  if (!ts || !v1) {
+    console.warn('[webhook] Missing ts or v1 in x-signature header')
+    return false
+  }
 
   const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`
   const expected = createHmac('sha256', secret).update(manifest).digest('hex')
@@ -39,11 +46,13 @@ export async function POST(req: NextRequest) {
     const rawBody = await req.text()
 
     if (!validateSignature(req, rawBody)) {
+      console.error('[webhook] Signature validation failed')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = JSON.parse(rawBody)
     const { type, data } = body
+    console.log(`[webhook] Received type=${type} data=${JSON.stringify(data)}`)
 
     if (type !== 'payment') {
       return NextResponse.json({ ok: true })
