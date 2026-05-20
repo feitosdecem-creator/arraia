@@ -407,6 +407,27 @@ img, video, svg {
 .fdc-small { font-size: var(--t-sm); }
 
 /* ============================================================
+   TICKET PAGE ANIMATIONS
+   ============================================================ */
+@keyframes ticket-appear {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes qr-pulse {
+  0%, 100% { box-shadow: 0 4px 24px rgba(236,82,18,0.14); }
+  50%       { box-shadow: 0 4px 32px rgba(236,82,18,0.32); }
+}
+.ticket-appear {
+  animation: ticket-appear 480ms var(--ease-out) both;
+}
+.ticket-appear-delay-1 { animation-delay: 80ms; }
+.ticket-appear-delay-2 { animation-delay: 160ms; }
+.ticket-appear-delay-3 { animation-delay: 240ms; }
+.qr-glow {
+  animation: qr-pulse 2.4s ease-in-out infinite;
+}
+
+/* ============================================================
    EMBEDDED AUTH ANIMATIONS
    ============================================================ */
 @keyframes auth-fade-up {
@@ -594,6 +615,16 @@ img, video, svg {
   }
   .navbar-brand-label {
     display: none !important;
+  }
+
+  /* Ticket page action buttons */
+  .ticket-actions-row {
+    flex-direction: column !important;
+  }
+  .ticket-actions-row a,
+  .ticket-actions-row button {
+    flex: none !important;
+    width: 100% !important;
   }
 
   /* Cart checkout bar — stack on very small screens */
