@@ -97,17 +97,16 @@ export default async function TicketPage({ params }: Props) {
           <div
             style={{
               padding: '28px 24px 24px',
-              background: isUsed
-                ? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
-                : 'linear-gradient(135deg, var(--fdc-tangerine) 0%, #f97316 40%, var(--fdc-sun) 80%, #fbbf24 100%)',
+              backgroundImage: isUsed ? undefined : 'url(/banner.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+              backgroundColor: isUsed ? '#6b7280' : 'var(--fdc-tangerine)',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
-            {/* Decorative circles */}
-            <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: -20, right: 60, width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', top: 10, right: 100, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.09)', pointerEvents: 'none' }} />
+            {/* Overlay for readability */}
+            <div style={{ position: 'absolute', inset: 0, background: isUsed ? 'linear-gradient(135deg, rgba(107,114,128,0.92), rgba(75,85,99,0.95))' : 'linear-gradient(to bottom, rgba(20,10,4,0.38) 0%, rgba(20,10,4,0.55) 100%)', pointerEvents: 'none' }} />
 
             {/* Badge */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.2)', marginBottom: 14 }}>

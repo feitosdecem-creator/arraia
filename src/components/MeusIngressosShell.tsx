@@ -85,10 +85,17 @@ function EventCard({ order, onShare, shared }: { order: OrderData; onShare: () =
       <div className="mi-event-card-top">
 
         {/* Banner */}
-        <div className="mi-event-banner">
-          <div style={{ position: 'absolute', inset: 0, background: order.isUpcoming ? 'linear-gradient(145deg, #e8622a 0%, #f2883a 55%, #f5a832 100%)' : 'linear-gradient(145deg, #9ca3af 0%, #6b7280 100%)' }} />
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 110, height: 110, borderRadius: '50%', background: 'rgba(255,255,255,0.09)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: -15, left: -15, width: 70, height: 70, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', pointerEvents: 'none' }} />
+        <div
+          className="mi-event-banner"
+          style={{
+            backgroundImage: order.isUpcoming ? 'url(/banner.jpg)' : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
+            backgroundColor: order.isUpcoming ? '#e8622a' : '#6b7280',
+          }}
+        >
+          {/* Overlay: darkens photo for readability on upcoming, solid on past */}
+          <div style={{ position: 'absolute', inset: 0, background: order.isUpcoming ? 'linear-gradient(to top, rgba(20,12,4,0.65) 0%, rgba(20,12,4,0.15) 60%, rgba(20,12,4,0.05) 100%)' : 'linear-gradient(145deg, #9ca3af 0%, #6b7280 100%)' }} />
           {/* Ticket count chip */}
           <div style={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(255,255,255,0.92)', borderRadius: 999, display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', fontSize: 12, fontWeight: 700, color: '#1a1512', backdropFilter: 'blur(8px)' }}>
             <span style={{ fontSize: 10 }}>🎟</span> {order.tickets.length}

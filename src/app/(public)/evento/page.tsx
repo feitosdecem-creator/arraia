@@ -53,25 +53,25 @@ export default async function EventoPage() {
             borderRadius: 'var(--radius-xl)',
             overflow: 'hidden',
             marginBottom: 40,
-            background: 'linear-gradient(135deg, var(--fdc-tangerine) 0%, var(--fdc-sun) 70%, var(--fdc-leaf-soft) 100%)',
+            backgroundImage: 'url(/banner.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
+            backgroundColor: 'var(--fdc-tangerine)',
             minHeight: 280,
             display: 'flex',
             alignItems: 'flex-end',
             padding: '40px 40px 36px',
             position: 'relative',
           }}
-          className="fdc-grain evento-hero"
+          className="evento-hero"
         >
+          {/* Dark gradient overlay so text stays legible */}
           <div
             aria-hidden
             style={{
               position: 'absolute',
-              top: -60,
-              right: -60,
-              width: 300,
-              height: 300,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(20,12,4,0.72) 0%, rgba(20,12,4,0.18) 55%, rgba(20,12,4,0.05) 100%)',
             }}
           />
           <div style={{ position: 'relative', zIndex: 1 }}>
