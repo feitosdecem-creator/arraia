@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { DeleteTicketButton } from './DeleteTicketButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -71,6 +72,7 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Tipo</th>
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Status</th>
               <th className="text-left px-6 py-3 text-gray-500 font-medium">Emitido em</th>
+              <th className="text-left px-6 py-3 text-gray-500 font-medium">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -97,6 +99,9 @@ export default async function IngressosPage({ searchParams }: { searchParams: Se
                 </td>
                 <td className="px-6 py-4 text-xs text-gray-500">
                   {format(ticket.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                </td>
+                <td className="px-6 py-4">
+                  <DeleteTicketButton ticketId={ticket.id} isUsed={!!ticket.usedAt} />
                 </td>
               </tr>
             ))}
