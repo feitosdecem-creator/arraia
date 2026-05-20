@@ -53,7 +53,7 @@ function Footer() {
               margin: 0,
             }}
           >
-            Arraiá nu Quintal 2 · Pátio da Escola
+            Arraiá nu Quintal 2 · Quintal Escola Feitos de Cem
           </p>
         </div>
 

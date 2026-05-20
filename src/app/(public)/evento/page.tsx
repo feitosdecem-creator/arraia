@@ -133,6 +133,53 @@ export default async function EventoPage() {
           </div>
         </div>
 
+        {/* ── 1º Lote banner ── */}
+        <div style={{ marginBottom: 32, borderRadius: 20, overflow: 'hidden', border: '1.5px solid #f5c84a', boxShadow: '0 4px 24px rgba(245,184,50,0.18)' }}>
+
+          {/* Header strip */}
+          <div style={{ background: 'linear-gradient(90deg, #f5a100 0%, #f5c84a 100%)', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 16 }}>🎟</span>
+            <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#3d2400' }}>
+              1º Lote — Preços especiais
+            </span>
+            <span style={{ marginLeft: 'auto', background: 'rgba(61,36,0,0.15)', borderRadius: 999, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#3d2400', letterSpacing: '0.06em' }}>
+              Preço de lançamento
+            </span>
+          </div>
+
+          {/* Prices row */}
+          <div style={{ background: '#fffdf5', padding: '20px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+
+            {/* Inteira */}
+            <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px', border: '1.5px solid #fde68a', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#92700a' }}>Inteira</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#92700a' }}>R$</span>
+                <span style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.03em', color: '#1a1512', lineHeight: 1 }}>18</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#92700a', marginBottom: 2 }}>,00</span>
+              </div>
+            </div>
+
+            {/* Meia-Entrada */}
+            <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px', border: '1.5px solid #fde68a', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#92700a' }}>Meia-Entrada</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#92700a' }}>R$</span>
+                <span style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.03em', color: '#1a1512', lineHeight: 1 }}>10</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#92700a', marginBottom: 2 }}>,00</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Free kids notice */}
+          <div style={{ background: '#f0f9e8', borderTop: '1px solid #c6e6a0', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>🌟</span>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#2d5a14', lineHeight: 1.4 }}>
+              Crianças alunas do <strong>Quintal Escola Feitos de Cem</strong> não pagam ingresso — entrada gratuita para os pequenos da escola!
+            </p>
+          </div>
+        </div>
+
         {/* Main 2-col layout */}
         <div
           className="evento-grid"
