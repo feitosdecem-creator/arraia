@@ -134,12 +134,6 @@ export default async function EventoPage() {
         </div>
 
         {/* Main 2-col layout */}
-        <style>{`
-          @media (max-width: 768px) {
-            .evento-grid { grid-template-columns: 1fr !important; }
-            .evento-grid .evento-tickets { order: -1; }
-          }
-        `}</style>
         <div
           className="evento-grid"
           style={{

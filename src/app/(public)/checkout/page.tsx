@@ -261,13 +261,6 @@ export default function CheckoutPage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <style>{`
-        @media (max-width: 768px) {
-          .checkout-outer { padding: 24px 16px 80px !important; }
-          .checkout-grid { grid-template-columns: 1fr !important; }
-          .checkout-grid .checkout-summary { order: -1; position: static !important; }
-        }
-      `}</style>
       <div
         className="checkout-outer"
         style={{

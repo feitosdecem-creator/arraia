@@ -88,12 +88,6 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '60vh', padding: '8px 0 40px' }}>
-      <style>{`
-        @media (max-width: 640px) {
-          .pix-card { grid-template-columns: 1fr !important; }
-          .pix-qr { border-right: none !important; border-bottom: 1px solid var(--line-2); }
-        }
-      `}</style>
       {/* Pending badge */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
         <div

@@ -387,3 +387,54 @@ html, body {
 /* Muted text helpers */
 .fdc-muted { color: var(--fg-2); }
 .fdc-small { font-size: var(--t-sm); }
+
+/* ============================================================
+   RESPONSIVE — Mobile breakpoints
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Public evento page */
+  .evento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .evento-grid .evento-tickets {
+    order: -1;
+    position: static !important;
+  }
+
+  /* Checkout page */
+  .checkout-outer {
+    padding: 24px 16px 80px !important;
+  }
+  .checkout-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .checkout-summary {
+    order: -1;
+    position: static !important;
+  }
+
+  /* Pagamento page */
+  .pagamento-outer {
+    padding: 24px 16px 80px !important;
+  }
+
+  /* PIX payment card */
+  .pix-card {
+    grid-template-columns: 1fr !important;
+  }
+  .pix-qr {
+    border-right: none !important;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  /* Admin dashboard metrics */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Container padding */
+  .container-pad-mobile {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
