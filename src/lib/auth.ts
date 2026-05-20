@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { rateLimitIp } from '@/lib/ratelimit'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -10,8 +11,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null
+
+        // 10 tentativas de login por IP a cada 15 minutos
+        if (request) {
+          const { allowed } = rateLimitIp(request, 'login', 10, 15 * 60_000)
+          if (!allowed) return null
+        }
 
         const email = credentials.email as string
         const password = credentials.password as string

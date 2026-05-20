@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import { rateLimitIp } from '@/lib/ratelimit'
 
 const schema = z.object({
   name: z.string().min(2),
@@ -10,6 +11,15 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  // 5 cadastros por IP a cada 15 minutos
+  const { allowed, retryAfterMs } = rateLimitIp(req, 'register', 5, 15 * 60_000)
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Muitas tentativas. Aguarde e tente novamente.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) } },
+    )
+  }
+
   try {
     const body = await req.json()
     const parsed = schema.safeParse(body)
