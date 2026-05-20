@@ -97,7 +97,7 @@ export default async function TicketPage({ params }: Props) {
           <div
             style={{
               padding: '28px 24px 24px',
-              backgroundImage: isUsed ? undefined : 'url(/banner.jpg)',
+              backgroundImage: isUsed ? undefined : 'url(/Banner.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center top',
               backgroundColor: isUsed ? '#6b7280' : 'var(--fdc-tangerine)',

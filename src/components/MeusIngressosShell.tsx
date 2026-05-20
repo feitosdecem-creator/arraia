@@ -88,7 +88,7 @@ function EventCard({ order, onShare, shared }: { order: OrderData; onShare: () =
         <div
           className="mi-event-banner"
           style={{
-            backgroundImage: order.isUpcoming ? 'url(/banner.jpg)' : undefined,
+            backgroundImage: order.isUpcoming ? 'url(/Banner.png)' : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             backgroundColor: order.isUpcoming ? '#e8622a' : '#6b7280',

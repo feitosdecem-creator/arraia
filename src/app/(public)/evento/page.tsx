@@ -53,7 +53,7 @@ export default async function EventoPage() {
             borderRadius: 'var(--radius-xl)',
             overflow: 'hidden',
             marginBottom: 40,
-            backgroundImage: 'url(/banner.jpg)',
+            backgroundImage: 'url(/Banner.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             backgroundColor: 'var(--fdc-tangerine)',
