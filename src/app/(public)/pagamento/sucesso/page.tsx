@@ -198,19 +198,20 @@ export default async function PagamentoSucessoPage() {
 
           {/* ── MINI TICKET ── */}
           <div className="s-tckt" style={{
-            background: '#1a1410',
             borderRadius: 18,
             overflow: 'hidden',
             marginBottom: 28,
-            boxShadow: '0 12px 40px rgba(26,20,16,0.22)',
+            boxShadow: '0 12px 40px rgba(26,20,16,0.32)',
             position: 'relative',
+            backgroundImage: 'url(/Banner.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
           }}>
-            {/* Ornamentos decorativos */}
-            <div style={{ position: 'absolute', top: -24, right: -24, width: 90, height: 90, borderRadius: '50%', background: 'rgba(244,183,59,0.07)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: -28, left: -18, width: 100, height: 100, borderRadius: '50%', background: 'rgba(111,168,74,0.05)', pointerEvents: 'none' }} />
+            {/* Overlay escuro para legibilidade */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(14,8,2,0.78) 0%, rgba(14,8,2,0.88) 100%)', pointerEvents: 'none' }} />
 
             {/* Topo do ticket */}
-            <div style={{ padding: '22px 24px 16px', position: 'relative' }}>
+            <div style={{ padding: '22px 24px 16px', position: 'relative', zIndex: 1 }}>
               <div style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: '0.16em',
                 textTransform: 'uppercase', color: 'var(--fdc-sun)',
@@ -233,10 +234,10 @@ export default async function PagamentoSucessoPage() {
             </div>
 
             {/* Linha de corte */}
-            <div style={{ display: 'flex', alignItems: 'center', padding: '0', overflow: 'hidden' }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-page)', flexShrink: 0 }} />
-              <div style={{ flex: 1, borderTop: '1.5px dashed rgba(253,250,245,0.12)', margin: '0 6px' }} />
-              <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-page)', flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'center', padding: '0', overflow: 'hidden', position: 'relative', zIndex: 1 }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-page)', flexShrink: 0, position: 'relative', zIndex: 2 }} />
+              <div style={{ flex: 1, borderTop: '1.5px dashed rgba(253,250,245,0.22)', margin: '0 6px', position: 'relative', zIndex: 2 }} />
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--bg-page)', flexShrink: 0, position: 'relative', zIndex: 2 }} />
             </div>
 
             {/* Base do ticket */}
@@ -244,7 +245,7 @@ export default async function PagamentoSucessoPage() {
               padding: '16px 24px 20px',
               display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', gap: 12,
-              position: 'relative',
+              position: 'relative', zIndex: 1,
             }}>
               <div>
                 <div style={{
