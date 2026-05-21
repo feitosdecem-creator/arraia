@@ -175,3 +175,68 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
     `,
   })
 }
+
+export async function sendPasswordResetEmail(email: string, name: string, token: string): Promise<void> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://arraia.feitosdecem.com.br'
+  const resetUrl = `${appUrl}/redefinir-senha?token=${encodeURIComponent(token)}`
+  const resend = getResend()
+  await resend.emails.send({
+    from: 'Arraiá nu Quintal 2 <ingressos@arraia.escola.com>',
+    to: email,
+    subject: 'Redefinir senha — Arraiá nu Quintal 2',
+    html: `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Redefinir senha</title>
+      </head>
+      <body style="font-family:Arial,sans-serif;background:#f5f0eb;margin:0;padding:20px;">
+        <div style="max-width:600px;margin:0 auto;">
+
+          <!-- Header -->
+          <div style="background:#1a0f08;border-radius:16px;padding:32px 28px;text-align:center;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#f5a832;margin-bottom:10px;">
+              Feitos de Cem
+            </div>
+            <h1 style="color:#faf5ef;margin:0 0 8px;font-size:26px;font-weight:800;letter-spacing:-0.5px;">
+              Arraiá nu Quintal 2
+            </h1>
+            <p style="color:rgba(250,245,239,0.65);margin:0;font-size:14px;">
+              Redefinição de senha
+            </p>
+          </div>
+
+          <!-- Card -->
+          <div style="background:#ffffff;border-radius:14px;padding:28px 24px;margin-bottom:16px;border:1px solid #e8e2da;">
+            <p style="margin:0 0 8px;font-size:16px;font-weight:700;color:#1a1512;">
+              Olá, ${esc(name)}!
+            </p>
+            <p style="margin:0 0 20px;font-size:14px;color:#6b5f56;line-height:1.6;">
+              Recebemos uma solicitação para redefinir a senha da sua conta.
+              Clique no botão abaixo para criar uma nova senha.
+            </p>
+            <div style="text-align:center;margin-bottom:20px;">
+              <a href="${resetUrl}"
+                 style="display:inline-block;background:#e8622a;color:#ffffff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;">
+                Redefinir minha senha →
+              </a>
+            </div>
+            <p style="margin:0;font-size:12px;color:#9e9087;line-height:1.6;">
+              Este link expira em <strong>1 hora</strong>. Se você não solicitou a redefinição de senha, pode ignorar este e-mail com segurança.
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div style="text-align:center;margin-top:28px;padding:16px;font-size:12px;color:#b8a898;line-height:1.6;">
+            <p style="margin:0 0 4px;">Dúvidas? Fale com a organização do evento.</p>
+            <p style="margin:0;color:#c8b8a8;font-weight:700;letter-spacing:0.5px;">FEITOS DE CEM</p>
+          </div>
+
+        </div>
+      </body>
+      </html>
+    `,
+  })
+}

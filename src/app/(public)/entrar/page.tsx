@@ -353,6 +353,13 @@ function LoginForm() {
                 style={{ ...INP, paddingRight: 42 }}
               />
             </Field>
+            {isLogin && (
+              <div style={{ textAlign: 'right', marginTop: 6 }}>
+                <Link href="/esqueci-senha" style={{ fontSize: 12, color: 'var(--fg-3)', textDecoration: 'none' }}>
+                  Esqueci minha senha
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
