@@ -29,7 +29,6 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
   const [syncing, setSyncing] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     const expires = new Date(expiresAt).getTime()
@@ -43,16 +42,39 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [expiresAt])
 
+  const timeLeftRef = useRef(0)
+
   useEffect(() => {
-    pollRef.current = setInterval(async () => {
+    timeLeftRef.current = timeLeft
+  }, [timeLeft])
+
+  // Conservative polling: 5s × 6, then 10s × 6, then 15s until expiry — max ~5 min
+  useEffect(() => {
+    let stopped = false
+    let attempt = 0
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    const poll = async () => {
+      if (stopped || timeLeftRef.current <= 0) return
       try {
         const res = await fetch(`/api/orders/${orderId}/status`)
         const data = await res.json()
-        if (data.status === 'PAID') router.push('/pagamento/sucesso')
-      } catch { /* ignore */ }
-    }, 4000)
-    return () => { if (pollRef.current) clearInterval(pollRef.current) }
-  }, [orderId, router])
+        if (data.status === 'PAID') {
+          stopped = true
+          router.push('/pagamento/sucesso')
+          return
+        }
+      } catch { /* ignore network errors */ }
+
+      if (stopped) return
+      attempt++
+      const delay = attempt < 6 ? 5_000 : attempt < 12 ? 10_000 : 15_000
+      timeoutId = setTimeout(poll, delay)
+    }
+
+    timeoutId = setTimeout(poll, 5_000)
+    return () => { stopped = true; clearTimeout(timeoutId) }
+  }, [orderId]) // router is stable — intentionally omitted
 
   const handleSync = async () => {
     setSyncing(true)
@@ -166,8 +188,11 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
 
           {/* Auto-update note */}
           <div style={{ padding: '12px 14px', background: 'rgba(111,168,74,0.08)', borderRadius: 10, fontSize: 13, color: 'var(--fdc-leaf-deep)', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span>🔒</span>
-            <span>Esta página atualiza automaticamente após o pagamento.</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+            </svg>
+            <span>Verificando automaticamente a cada poucos segundos.</span>
           </div>
 
           {/* Manual sync fallback */}
