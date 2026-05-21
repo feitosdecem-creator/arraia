@@ -166,7 +166,7 @@ export default async function EventoPage() {
                 </svg>
               ),
               label: 'Organizado por',
-              value: 'Escola Feitos de Cem',
+              value: 'Quintal Escola Feitos de Cem',
             },
           ].map((item) => (
             <div
@@ -212,19 +212,18 @@ export default async function EventoPage() {
           {/* Section header */}
           <div className="pricing-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 12, padding: '4px 11px', borderRadius: 999, background: 'rgba(194,120,10,0.08)', border: '1px solid rgba(194,120,10,0.16)' }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c2780a', display: 'inline-block', flexShrink: 0 }} />
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#a16207' }}>1º Lote</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '4px 11px', borderRadius: 999, background: 'rgba(194,120,10,0.08)', border: '1px solid rgba(194,120,10,0.16)' }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c2780a', display: 'inline-block', flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#a16207' }}>1º Lote</span>
+                </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 11px', borderRadius: 999, background: 'rgba(194,120,10,0.07)', border: '1px solid rgba(194,120,10,0.15)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: '#92400e' }}>Preço promocional</span>
+                </div>
               </div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--fg-1)', margin: 0, lineHeight: 1.1 }}>
                 Ingressos disponíveis
               </h2>
-              <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: '8px 0 0', lineHeight: 1.5 }}>
-                Garanta sua vaga — sexta, 19 de junho · 18h30
-              </p>
-            </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 14px', borderRadius: 999, background: 'rgba(194,120,10,0.07)', border: '1px solid rgba(194,120,10,0.15)', flexShrink: 0 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e', letterSpacing: '-0.01em' }}>Preço promocional</span>
             </div>
           </div>
 
@@ -266,8 +265,11 @@ export default async function EventoPage() {
                 Sobre o evento
               </h2>
               <p style={{ color: 'var(--fg-2)', fontSize: 16, lineHeight: 1.6, margin: 0 }}>
-                {event.description ??
-                  'Reservamos uma tarde para reunir famílias, professores e crianças. O ingresso garante a entrada e ajuda a custear a estrutura — comidas, bebidas e atividades.'}
+                O maior arraiá da cidade está de volta! Venha curtir com a gente uma festa incrível,
+                com quadrilha, comidas típicas e muito mais!
+              </p>
+              <p style={{ color: 'var(--fg-2)', fontSize: 16, lineHeight: 1.6, margin: '12px 0 0' }}>
+                Será uma noite inesquecível para toda a sua família.
               </p>
               <p style={{ color: 'var(--fg-2)', fontSize: 16, lineHeight: 1.6, margin: '12px 0 0' }}>
                 A entrada é feita pela apresentação do QR Code do ingresso digital, que você recebe
@@ -284,7 +286,7 @@ export default async function EventoPage() {
               }}
             >
               <div className="fdc-eyebrow" style={{ marginBottom: 14, color: 'var(--fg-2)' }}>
-                O que está incluso
+                O que teremos na festa
               </div>
               <div
                 className="evento-inclusions-grid"
@@ -295,10 +297,11 @@ export default async function EventoPage() {
                 }}
               >
                 {[
-                  'Acesso ao evento',
-                  'Atividades para crianças',
-                  'Comidas e bebidas à venda',
-                  'Espaço com cobertura',
+                  'Barraquinhas com Comidas Típicas',
+                  'Quadrilha',
+                  'Apresentações',
+                  'Sorteios',
+                  'Área Kids',
                 ].map((inc) => (
                   <div
                     key={inc}
