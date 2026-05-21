@@ -1,10 +1,11 @@
 'use client'
 
-import { useSession, signIn } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useCart } from '@/components/CartProvider'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { loginAction } from './actions'
 
 // ─── Step bar ────────────────────────────────────────────────
 const STEPS = ['Ingressos', 'Dados', 'Pagamento', 'Confirmação']
@@ -31,6 +32,7 @@ function StepBar({ step }: { step: number }) {
 type AuthStep = 'email' | 'checking' | 'login' | 'register'
 
 function EmbeddedAuth() {
+  const { update: updateSession } = useSession()
   const [step, setStep] = useState<AuthStep>('email')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -96,9 +98,11 @@ function EmbeddedAuth() {
           return
         }
       }
-      const result = await signIn('credentials', { email: email.trim(), password, redirect: false })
-      if (result?.error) {
+      const result = await loginAction(email.trim(), password)
+      if (!result.ok) {
         setError(step === 'login' ? 'Senha incorreta. Tente novamente.' : 'Erro ao entrar. Tente novamente.')
+      } else {
+        await updateSession()
       }
     } catch {
       setError('Erro inesperado. Tente novamente.')
