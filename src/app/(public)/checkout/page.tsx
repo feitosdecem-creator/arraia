@@ -221,12 +221,12 @@ function EmbeddedAuth() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete={step === 'login' ? 'current-password' : 'new-password'}
-              minLength={6}
+              minLength={8}
               required
               style={inp}
             />
             {step === 'register' && (
-              <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '6px 0 0' }}>Mínimo 6 caracteres</p>
+              <p style={{ fontSize: 12, color: 'var(--fg-3)', margin: '6px 0 0' }}>Mínimo 8 caracteres</p>
             )}
           </div>
         )}
@@ -333,7 +333,7 @@ function OrderSummary({ items, total }: { items: ReturnType<typeof useCart>['ite
 // ─── Main checkout page ───────────────────────────────────────
 export default function CheckoutPage() {
   const { data: session, status } = useSession()
-  const { items, total, clearCart } = useCart()
+  const { items, total } = useCart()
   const router = useRouter()
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
@@ -351,7 +351,6 @@ export default function CheckoutPage() {
       const data = await res.json()
       if (!res.ok) { setOrderError(data.error || 'Erro ao criar pedido'); return }
       router.push(`/pagamento/${data.orderId}`)
-      clearCart()
     } catch {
       setOrderError('Erro ao processar pedido. Tente novamente.')
     } finally {

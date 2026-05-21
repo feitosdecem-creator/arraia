@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useCart } from './CartProvider'
 import { signOut, useSession } from 'next-auth/react'
 import { useState, useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
@@ -122,7 +121,6 @@ function DrawerNavItem({
 }
 
 export function Navbar() {
-  const { itemCount } = useCart()
   const { data: session } = useSession()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerClosing, setDrawerClosing] = useState(false)
@@ -193,14 +191,6 @@ export function Navbar() {
             <Link href="/meus-ingressos" className="navbar-nav-link" style={{ padding: '6px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', textDecoration: 'none', transition: 'color 140ms' }}>
               Meus Ingressos
             </Link>
-            <Link href="/carrinho" className="navbar-nav-link" style={{ position: 'relative', padding: '6px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', textDecoration: 'none' }}>
-              Carrinho
-              {itemCount > 0 && (
-                <span style={{ position: 'absolute', top: 2, right: 2, background: 'var(--fdc-tangerine)', color: 'white', fontSize: 10, fontWeight: 700, borderRadius: 999, width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {itemCount}
-                </span>
-              )}
-            </Link>
 
             {session ? (
               <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -234,12 +224,6 @@ export function Navbar() {
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Link href="/carrinho" className="mobile-icon-btn" aria-label="Carrinho" style={{ textDecoration: 'none', color: 'var(--fg-1)' }}>
-              <IconCart />
-              {itemCount > 0 && (
-                <span className="mobile-cart-badge">{itemCount > 9 ? '9+' : itemCount}</span>
-              )}
-            </Link>
             <button onClick={openDrawer} className="mobile-icon-btn" aria-label="Abrir menu" aria-expanded={drawerOpen}>
               <IconMenu />
             </button>
@@ -301,13 +285,6 @@ export function Navbar() {
                 icon={<IconWallet />}
                 label="Meus ingressos"
                 active={pathname.startsWith('/meus-ingressos')}
-              />
-              <DrawerNavItem
-                href="/carrinho"
-                icon={<IconBag />}
-                label="Carrinho"
-                active={pathname === '/carrinho'}
-                badge={itemCount}
               />
             </div>
 

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { CartClearer } from '@/components/CartClearer'
 
 export default async function PagamentoSucessoPage() {
   const session = await auth()
@@ -8,6 +9,7 @@ export default async function PagamentoSucessoPage() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-20 text-center">
+      <CartClearer />
       <div className="text-7xl mb-6">🎉</div>
       <h1 className="text-3xl font-extrabold text-green-700 mb-4">
         Pagamento Confirmado!
