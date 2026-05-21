@@ -17,8 +17,15 @@ export async function POST(req: NextRequest) {
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ exists: false })
     }
+    const normalized = email.trim().toLowerCase()
+
+    // Admin is defined via env var, not in the DB
+    if (process.env.ADMIN_EMAIL && normalized === process.env.ADMIN_EMAIL.toLowerCase()) {
+      return NextResponse.json({ exists: true })
+    }
+
     const user = await prisma.user.findUnique({
-      where: { email: email.trim().toLowerCase() },
+      where: { email: normalized },
       select: { id: true },
     })
     return NextResponse.json({ exists: !!user })
