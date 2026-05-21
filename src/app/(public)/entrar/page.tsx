@@ -414,26 +414,6 @@ function LoginForm() {
 export default function EntrarPage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-
-      {/* Dark event strip */}
-      <div style={{
-        background: '#1a1410',
-        padding: '18px var(--container-pad)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        flexShrink: 0,
-      }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <img src="/logo-navbar.svg" alt="Arraiá nu Quintal 2" style={{ height: 28, width: 'auto', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f5c84a', display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(253,250,245,0.65)' }}>
-            Próximo evento
-          </span>
-        </div>
-      </div>
-
-      {/* Form area */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px 48px' }}>
         <div style={{ width: '100%', maxWidth: 400 }}>
 
