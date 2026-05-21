@@ -5,16 +5,6 @@ import { signOut, useSession } from 'next-auth/react'
 import { useState, useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 
-function IconCart() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 01-8 0" />
-    </svg>
-  )
-}
-
 function IconMenu() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -44,29 +34,10 @@ function IconTicket() {
 
 function IconWallet() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
       <path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z" />
       <circle cx="17" cy="14" r="1.5" fill="currentColor" stroke="none" />
-    </svg>
-  )
-}
-
-function IconBag() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 01-8 0" />
-    </svg>
-  )
-}
-
-function IconUser() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
     </svg>
   )
 }
@@ -94,14 +65,12 @@ function DrawerNavItem({
   icon,
   label,
   active,
-  badge,
   onClick,
 }: {
   href: string
   icon: React.ReactNode
   label: string
   active?: boolean
-  badge?: number
   onClick?: () => void
 }) {
   return (
@@ -112,9 +81,6 @@ function DrawerNavItem({
     >
       <span className="drawer-nav-icon">{icon}</span>
       <span className="drawer-nav-label">{label}</span>
-      {badge !== undefined && badge > 0 && (
-        <span className="drawer-item-badge">{badge > 9 ? '9+' : badge}</span>
-      )}
       <span className="drawer-nav-chevron"><IconChevron /></span>
     </Link>
   )
@@ -126,13 +92,11 @@ export function Navbar() {
   const [drawerClosing, setDrawerClosing] = useState(false)
   const pathname = usePathname()
 
-  // Close instantly on route change
   useEffect(() => {
     setDrawerOpen(false)
     setDrawerClosing(false)
   }, [pathname])
 
-  // Lock body scroll while drawer is open
   useEffect(() => {
     document.body.style.overflow = drawerOpen && !drawerClosing ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -151,9 +115,19 @@ export function Navbar() {
     setDrawerClosing(false)
   }
 
+  const handleSignOut = useCallback(() => {
+    signOut({ redirect: false }).then(() => {
+      window.location.href = 'https://arraia.feitosdecem.com.br'
+    })
+  }, [])
+
   const initials = session?.user?.name
     ? session.user.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
     : '?'
+
+  const meusIngressosHref = session
+    ? '/meus-ingressos'
+    : '/entrar?callbackUrl=/meus-ingressos'
 
   return (
     <>
@@ -166,7 +140,7 @@ export function Navbar() {
           zIndex: 50,
         }}
       >
-        {/* ── DESKTOP bar (hidden on mobile) ── */}
+        {/* ── DESKTOP bar ── */}
         <div
           className="navbar-inner navbar-desktop-bar"
           style={{
@@ -184,54 +158,60 @@ export function Navbar() {
             <img src="/logo-navbar.svg" alt="Arraiá nu Quintal 2" style={{ height: 36, width: 'auto', display: 'block' }} />
           </Link>
 
-          <nav className="navbar-nav" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <nav className="navbar-nav" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Link href="/evento" className="navbar-nav-link" style={{ padding: '6px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', textDecoration: 'none', transition: 'color 140ms' }}>
               Ingressos
             </Link>
-            <Link href="/meus-ingressos" className="navbar-nav-link" style={{ padding: '6px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', textDecoration: 'none', transition: 'color 140ms' }}>
-              Meus Ingressos
-            </Link>
 
             {status === 'loading' ? (
-              <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 120, height: 36, borderRadius: 8, background: 'var(--fdc-cream-deep)' }} />
-              </div>
-            ) : session ? (
-              <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="navbar-auth-label" style={{ fontSize: 13, color: 'var(--fg-2)' }}>
-                  {session.user.name?.split(' ')[0]}
-                </span>
-                <button
-                  onClick={() => signOut({ redirect: false }).then(() => { window.location.href = 'https://arraia.feitosdecem.com.br' })}
-                  style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'transparent', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', minHeight: 36 }}
-                >
-                  Sair
-                </button>
-              </div>
+              <div style={{ width: 148, height: 36, borderRadius: 8, background: 'var(--fdc-cream-deep)' }} />
             ) : (
-              <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Link href="/entrar" style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--line-2)', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', textDecoration: 'none', minHeight: 36, display: 'inline-flex', alignItems: 'center' }}>
-                  Entrar
-                </Link>
-                <Link href="/evento" className="navbar-cta" style={{ padding: '7px 16px', borderRadius: 8, background: 'var(--fdc-tangerine)', color: 'white', fontSize: 13, fontWeight: 600, textDecoration: 'none', minHeight: 36, display: 'inline-flex', alignItems: 'center' }}>
-                  Comprar ingresso
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {session && (
+                  <>
+                    <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>
+                      {session.user.name?.split(' ')[0]}
+                    </span>
+                    <button
+                      onClick={handleSignOut}
+                      style={{ fontSize: 12, color: 'var(--fg-3)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontFamily: 'inherit' }}
+                    >
+                      Sair
+                    </button>
+                    <div style={{ width: 1, height: 16, background: 'var(--line-2)', flexShrink: 0 }} />
+                  </>
+                )}
+                <Link
+                  href={meusIngressosHref}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 7,
+                    padding: '7px 16px',
+                    borderRadius: 8,
+                    background: 'var(--fdc-tangerine)',
+                    color: 'white',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    minHeight: 36,
+                    transition: 'opacity 140ms',
+                  }}
+                >
+                  <IconWallet />
+                  Meus ingressos
                 </Link>
               </div>
             )}
           </nav>
         </div>
 
-        {/* ── MOBILE bar (hidden on desktop) ── */}
+        {/* ── MOBILE bar ── */}
         <div className="navbar-mobile-bar">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <img src="/logo-navbar.svg" alt="Arraiá nu Quintal 2" style={{ height: 30, width: 'auto', display: 'block' }} />
           </Link>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <button onClick={openDrawer} className="mobile-icon-btn" aria-label="Abrir menu" aria-expanded={drawerOpen}>
-              <IconMenu />
-            </button>
-          </div>
+          <button onClick={openDrawer} className="mobile-icon-btn" aria-label="Abrir menu" aria-expanded={drawerOpen}>
+            <IconMenu />
+          </button>
         </div>
       </header>
 
@@ -283,47 +263,37 @@ export function Navbar() {
                 icon={<IconTicket />}
                 label="Ingressos"
                 active={pathname === '/evento'}
+                onClick={closeDrawer}
               />
               <DrawerNavItem
-                href="/meus-ingressos"
+                href={meusIngressosHref}
                 icon={<IconWallet />}
                 label="Meus ingressos"
                 active={pathname.startsWith('/meus-ingressos')}
+                onClick={closeDrawer}
               />
             </div>
 
             <div className="drawer-divider" />
 
-            {/* Auth footer */}
+            {/* Footer */}
             <div className="drawer-footer">
               {session ? (
-                <>
-                  <DrawerNavItem
-                    href="/meus-ingressos"
-                    icon={<IconUser />}
-                    label="Minha conta"
-                    active={false}
-                  />
-                  <button
-                    className="drawer-signout-btn"
-                    onClick={() => { closeDrawer(); signOut({ redirect: false }).then(() => { window.location.href = 'https://arraia.feitosdecem.com.br' }) }}
-                  >
-                    <span className="drawer-nav-icon" style={{ color: '#b91c1c' }}><IconLogout /></span>
-                    <span>Sair da conta</span>
-                  </button>
-                </>
+                <button
+                  className="drawer-signout-btn"
+                  onClick={() => { closeDrawer(); handleSignOut() }}
+                >
+                  <span className="drawer-nav-icon" style={{ color: '#b91c1c' }}><IconLogout /></span>
+                  <span>Sair da conta</span>
+                </button>
               ) : (
-                <>
-                  <DrawerNavItem
-                    href="/entrar"
-                    icon={<IconUser />}
-                    label="Entrar na conta"
-                    active={pathname === '/entrar'}
-                  />
-                  <Link href="/evento" className="drawer-cta-btn" onClick={closeDrawer}>
-                    Comprar ingresso →
-                  </Link>
-                </>
+                <Link
+                  href="/entrar?callbackUrl=/meus-ingressos"
+                  className="drawer-cta-btn"
+                  onClick={closeDrawer}
+                >
+                  Meus ingressos →
+                </Link>
               )}
             </div>
           </nav>
