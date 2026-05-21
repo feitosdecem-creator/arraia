@@ -121,7 +121,7 @@ function DrawerNavItem({
 }
 
 export function Navbar() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerClosing, setDrawerClosing] = useState(false)
   const pathname = usePathname()
@@ -192,7 +192,11 @@ export function Navbar() {
               Meus Ingressos
             </Link>
 
-            {session ? (
+            {status === 'loading' ? (
+              <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 120, height: 36, borderRadius: 8, background: 'var(--fdc-cream-deep)' }} />
+              </div>
+            ) : session ? (
               <div className="navbar-auth" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className="navbar-auth-label" style={{ fontSize: 13, color: 'var(--fg-2)' }}>
                   {session.user.name?.split(' ')[0]}
