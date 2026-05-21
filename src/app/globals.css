@@ -474,6 +474,9 @@ img, video, svg {
   .evento-inclusions-grid {
     grid-template-columns: 1fr !important;
   }
+  .evento-details-strip {
+    grid-template-columns: 1fr !important;
+  }
 
   /* Checkout page */
   .checkout-outer {

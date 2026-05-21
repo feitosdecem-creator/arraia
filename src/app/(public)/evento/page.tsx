@@ -106,31 +106,104 @@ export default async function EventoPage() {
             >
               {event.name}
             </h1>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              {[
-                { emoji: '📅', text: `${eventDate} · ${eventTime}` },
-                { emoji: '📍', text: event.location },
-              ].map((m) => (
-                <div
-                  key={m.text}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 14px',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'rgba(255,255,255,0.18)',
-                    color: 'var(--fdc-cream)',
-                    fontSize: 13,
-                    fontWeight: 500,
-                  }}
-                >
-                  <span>{m.emoji}</span>
-                  <span>{m.text}</span>
-                </div>
-              ))}
-            </div>
           </div>
+        </div>
+
+        {/* ── Event details strip ── */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 1,
+            background: 'var(--line-2)',
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            marginBottom: 32,
+            border: '1px solid var(--line-2)',
+          }}
+          className="evento-details-strip"
+        >
+          {[
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              ),
+              label: 'Data',
+              value: eventDate.charAt(0).toUpperCase() + eventDate.slice(1),
+            },
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              ),
+              label: 'Horário',
+              value: eventTime,
+            },
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              ),
+              label: 'Local',
+              value: event.location,
+            },
+            {
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                  <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+              ),
+              label: 'Organizado por',
+              value: 'Escola Feitos de Cem',
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                padding: '18px 22px',
+                background: 'var(--bg-surface)',
+              }}
+            >
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'rgba(232,98,42,0.08)',
+                  border: '1px solid rgba(232,98,42,0.14)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  color: 'var(--fdc-tangerine)',
+                  flexShrink: 0,
+                }}
+              >
+                {item.icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--fg-3)', marginBottom: 3 }}>
+                  {item.label}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', lineHeight: 1.3 }}>
+                  {item.value}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ── Pricing section ── */}
@@ -315,7 +388,10 @@ export default async function EventoPage() {
                   color: 'var(--fg-3)',
                 }}
               >
-                <span>🔒</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
                 <span>Pagamento seguro · PIX</span>
               </div>
             </div>
