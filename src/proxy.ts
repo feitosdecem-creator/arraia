@@ -2,8 +2,7 @@
 // First line of defense — redirects before any page or API handler runs.
 //
 // Protected routes:
-//   /admin/*          → requires isAuthenticated + isAdmin; redirects to /admin/login
-//   /admin/login      → exempt (would cause redirect loop)
+//   /admin/*          → requires isAuthenticated + isAdmin; redirects to /entrar
 //   /meus-ingressos/* → requires isAuthenticated; redirects to /entrar with callbackUrl
 //   /pagamento/*      → requires isAuthenticated; redirects to /entrar with callbackUrl
 //   /checkout         → requires isAuthenticated; redirects to /entrar with callbackUrl
@@ -18,9 +17,11 @@ export default auth((req) => {
   const isAuthenticated = !!req.auth
   const isAdmin = req.auth?.user?.isAdmin === true
 
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+  if (pathname.startsWith('/admin')) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/admin/login', req.url))
+      const url = new URL('/entrar', req.url)
+      url.searchParams.set('callbackUrl', pathname)
+      return NextResponse.redirect(url)
     }
     if (!isAdmin) return NextResponse.redirect(new URL('/', req.url))
   }
