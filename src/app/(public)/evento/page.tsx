@@ -6,6 +6,12 @@ import { TicketTypeCard, CartCheckoutBar } from '@/components/TicketTypeCard'
 
 export const dynamic = 'force-dynamic'
 
+const BRT: Intl.DateTimeFormatOptions = { timeZone: 'America/Sao_Paulo' }
+
+function brtFormat(date: Date, opts: Intl.DateTimeFormatOptions) {
+  return new Intl.DateTimeFormat('pt-BR', { ...BRT, ...opts }).format(date)
+}
+
 export default async function EventoPage() {
   const event = await prisma.event.findFirst({
     where: { isActive: true },
@@ -19,8 +25,8 @@ export default async function EventoPage() {
 
   if (!event) return notFound()
 
-  const eventDate = format(event.date, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })
-  const eventTime = format(event.date, 'HH:mm', { locale: ptBR })
+  const eventDate = brtFormat(event.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const eventTime = brtFormat(event.date, { hour: '2-digit', minute: '2-digit', hour12: false })
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>

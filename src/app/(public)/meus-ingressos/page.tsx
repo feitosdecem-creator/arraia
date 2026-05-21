@@ -2,8 +2,6 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { MeusIngressosShell } from '@/components/MeusIngressosShell'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,9 +44,9 @@ export default async function MeusIngressosPage() {
         isUpcoming,
         eventName: event.name,
         eventLocation: event.location,
-        eventDateFull: format(event.date, "EEE, dd MMM yyyy", { locale: ptBR }),
-        eventTime: format(event.date, 'HH:mm', { locale: ptBR }),
-        purchaseDate: format(order.paidAt ?? order.createdAt, 'dd/MM/yyyy', { locale: ptBR }),
+        eventDateFull: new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).format(event.date),
+        eventTime: new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', hour12: false }).format(event.date),
+        purchaseDate: new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric' }).format(order.paidAt ?? order.createdAt),
         totalAmount: order.totalAmount,
         ticketTypes,
         validCount,

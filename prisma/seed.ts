@@ -30,7 +30,7 @@ async function main() {
         create: [
           {
             name: 'Inteira',
-            description: 'Ingresso inteiro com acesso a todas as atrações',
+            description: null,
             price: 3000,
             stock: 200,
             sortOrder: 0,
