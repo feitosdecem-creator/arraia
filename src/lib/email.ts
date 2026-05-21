@@ -36,7 +36,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
 
   if (!order) throw new Error('Order not found')
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://arraia.feitosdecem.com.br'
 
   const ticketsWithQr = await Promise.all(
     order.tickets.map(async (ticket) => {

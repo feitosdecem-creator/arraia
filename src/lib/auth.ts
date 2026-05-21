@@ -72,6 +72,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
+    redirect({ url, baseUrl }) {
+      // Always redirect within the production domain, not Vercel preview URLs.
+      // NEXT_PUBLIC_APP_URL takes precedence over whatever NextAuth auto-detected.
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://arraia.feitosdecem.com.br'
+      if (url.startsWith('/')) return `${appUrl}${url}`
+      try {
+        const u = new URL(url)
+        const app = new URL(appUrl)
+        if (u.origin === app.origin) return url
+        // Rewrite preview-domain absolute URLs to the production origin
+        if (u.pathname) return `${appUrl}${u.pathname}${u.search}`
+      } catch { /* ignore invalid URLs */ }
+      return appUrl
+    },
   },
   pages: {
     signIn: '/entrar',
