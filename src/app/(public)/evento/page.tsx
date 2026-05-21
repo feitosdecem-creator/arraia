@@ -277,62 +277,6 @@ export default async function EventoPage() {
               </p>
             </div>
 
-            {/* Map */}
-            <div style={{ marginBottom: 32 }}>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 22,
-                  fontWeight: 600,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--fg-1)',
-                  margin: '0 0 12px',
-                }}
-              >
-                Local
-              </h2>
-              <div
-                style={{
-                  borderRadius: 'var(--radius-lg)',
-                  overflow: 'hidden',
-                  border: '1px solid var(--line-2)',
-                }}
-              >
-                <iframe
-                  src="https://maps.google.com/maps?q=-19.464401340826086,-42.56171931793569&z=16&output=embed"
-                  width="100%"
-                  height="260"
-                  style={{ border: 0, display: 'block' }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Quintal Escola Feitos de Cem"
-                />
-              </div>
-              <a
-                href="https://maps.google.com/maps?q=-19.464401340826086,-42.56171931793569"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  marginTop: 10,
-                  fontSize: 13,
-                  color: 'var(--fdc-tangerine)',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-                Abrir no Google Maps
-              </a>
-            </div>
-
             {/* Inclusions */}
             <div
               style={{
@@ -388,6 +332,67 @@ export default async function EventoPage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Map */}
+            <div style={{ marginTop: 32 }}>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 22,
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--fg-1)',
+                  margin: '0 0 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--fdc-tangerine)', flexShrink: 0 }}>
+                  <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Local
+              </h2>
+              <div
+                style={{
+                  borderRadius: 'var(--radius-lg)',
+                  overflow: 'hidden',
+                  border: '1px solid var(--line-2)',
+                }}
+              >
+                <iframe
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-42.56472%2C-19.46740%2C-42.55872%2C-19.46140&layer=mapnik&marker=-19.46440%2C-42.56172"
+                  width="100%"
+                  height="260"
+                  style={{ border: 0, display: 'block' }}
+                  loading="lazy"
+                  title="Quintal Escola Feitos de Cem"
+                />
+              </div>
+              <a
+                href="https://www.google.com/maps?q=-19.464401340826086,-42.56171931793569"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 10,
+                  fontSize: 13,
+                  color: 'var(--fdc-tangerine)',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Abrir no Google Maps
+              </a>
             </div>
           </div>
 
