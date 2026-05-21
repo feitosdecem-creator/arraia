@@ -37,7 +37,6 @@ function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Link href="/evento" className="footer-link">Ver ingressos</Link>
               <Link href="/meus-ingressos" className="footer-link">Meus ingressos</Link>
-              <Link href="/carrinho" className="footer-link">Carrinho</Link>
             </div>
           </div>
           <div>
