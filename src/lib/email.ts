@@ -116,7 +116,7 @@ export async function sendTicketEmail(orderId: string): Promise<void> {
 
   const resend = getResend()
   await resend.emails.send({
-    from: 'Arraiá nu Quintal 2 <ingressos@arraia.escola.com>',
+    from: 'Arraiá nu Quintal 2 <ingressos@feitosdecem.com.br>',
     to: order.user.email,
     subject: `Seus ingressos — ${esc(event.name)}`,
     html: `
@@ -181,7 +181,7 @@ export async function sendPasswordResetEmail(email: string, name: string, token:
   const resetUrl = `${appUrl}/redefinir-senha?token=${encodeURIComponent(token)}`
   const resend = getResend()
   await resend.emails.send({
-    from: 'Arraiá nu Quintal 2 <ingressos@arraia.escola.com>',
+    from: 'Arraiá nu Quintal 2 <ingressos@feitosdecem.com.br>',
     to: email,
     subject: 'Redefinir senha — Arraiá nu Quintal 2',
     html: `
