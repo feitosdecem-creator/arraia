@@ -6,12 +6,18 @@
 // In an emergency (compromised token), rotate AUTH_SECRET in Vercel env vars.
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import Google from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
+import { nanoid } from 'nanoid'
 import { prisma } from '@/lib/prisma'
 import { rateLimitIp } from '@/lib/ratelimit'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     Credentials({
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -45,6 +51,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user) return null
 
+        // OAuth-only accounts have no password
+        if (!user.passwordHash || user.passwordHash.startsWith('oauth:')) return null
+
         const isValid = await bcrypt.compare(password, user.passwordHash)
         if (!isValid) return null
 
@@ -58,10 +67,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    async signIn({ user, account }) {
+      // Upsert Google users into our users table on first OAuth sign-in
+      if (account?.provider === 'google' && user.email) {
+        await prisma.user.upsert({
+          where: { email: user.email },
+          update: { name: user.name ?? user.email },
+          create: {
+            email: user.email,
+            name: user.name ?? user.email,
+            passwordHash: `oauth:${nanoid(32)}`,
+          },
+        })
+      }
+      return true
+    },
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id
-        token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false
+        if (account?.provider === 'google') {
+          // Map Google sub → our internal cuid
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email! },
+            select: { id: true },
+          })
+          token.id = dbUser?.id ?? user.id
+          token.isAdmin = false
+        } else {
+          token.id = user.id
+          token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false
+        }
       }
       return token
     },
