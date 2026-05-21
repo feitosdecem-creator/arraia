@@ -10,8 +10,11 @@ export const dynamic = 'force-dynamic'
 export default async function MeusIngressosPage() {
   const session = await auth()
 
-  if (!session?.user?.id || session.user.id === 'admin') {
+  if (!session?.user?.id) {
     redirect('/entrar?callbackUrl=/meus-ingressos')
+  }
+  if (session.user.id === 'admin') {
+    redirect('/admin')
   }
 
   const orders = await prisma.order.findMany({

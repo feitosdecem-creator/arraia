@@ -108,7 +108,7 @@ function Field({
 }
 
 function LoginForm() {
-  const { status } = useSession()
+  const { status, data: session } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('callbackUrl') || searchParams.get('next') || '/meus-ingressos'
@@ -127,8 +127,11 @@ function LoginForm() {
   const nameRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (status === 'authenticated') router.replace(next)
-  }, [status, router, next])
+    if (status === 'authenticated') {
+      // Admins always go to /admin to avoid loops with /meus-ingressos
+      router.replace(session?.user?.isAdmin ? '/admin' : next)
+    }
+  }, [status, router, next, session])
 
   const isEmailValid = email.includes('@') && email.includes('.')
 
