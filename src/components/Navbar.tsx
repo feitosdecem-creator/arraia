@@ -202,7 +202,7 @@ export function Navbar() {
                   {session.user.name?.split(' ')[0]}
                 </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://arraia.feitosdecem.com.br' })}
+                  onClick={() => signOut({ redirect: false }).then(() => { window.location.href = process.env.NEXT_PUBLIC_APP_URL || 'https://arraia.feitosdecem.com.br' })}
                   style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'transparent', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', minHeight: 36 }}
                 >
                   Sair
@@ -306,7 +306,7 @@ export function Navbar() {
                   />
                   <button
                     className="drawer-signout-btn"
-                    onClick={() => { closeDrawer(); signOut({ callbackUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://arraia.feitosdecem.com.br' }) }}
+                    onClick={() => { closeDrawer(); signOut({ redirect: false }).then(() => { window.location.href = process.env.NEXT_PUBLIC_APP_URL || 'https://arraia.feitosdecem.com.br' }) }}
                   >
                     <span className="drawer-nav-icon" style={{ color: '#b91c1c' }}><IconLogout /></span>
                     <span>Sair da conta</span>

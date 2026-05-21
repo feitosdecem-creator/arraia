@@ -88,6 +88,7 @@ function ResetForm() {
   }
 
   if (done) {
+    const loginUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://arraia.feitosdecem.com.br') + '/entrar'
     return (
       <div style={{ textAlign: 'center' }}>
         <div style={{
@@ -102,9 +103,9 @@ function ResetForm() {
         }}>
           Senha redefinida com sucesso!
         </div>
-        <Link href="/entrar" style={{ color: 'var(--fdc-tangerine)', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+        <a href={loginUrl} style={{ color: 'var(--fdc-tangerine)', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
           Ir para o login →
-        </Link>
+        </a>
       </div>
     )
   }
