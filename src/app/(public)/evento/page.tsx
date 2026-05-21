@@ -369,11 +369,13 @@ export default async function EventoPage() {
                 }}
               >
                 <iframe
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=-42.56472%2C-19.46740%2C-42.55872%2C-19.46140&layer=mapnik&marker=-19.46440%2C-42.56172"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3761.792935756609!2d-42.56432642502495!3d-19.46449238182171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xb0011751771247%3A0xfc3b0871b1c17dd1!2sQuintal%20Escola%20Feitos%20de%20Cem!5e0!3m2!1spt-BR!2sbr!4v1779371361096!5m2!1spt-BR!2sbr"
                   width="100%"
                   height="260"
                   style={{ border: 0, display: 'block' }}
+                  allowFullScreen
                   loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                   title="Quintal Escola Feitos de Cem"
                 />
               </div>
