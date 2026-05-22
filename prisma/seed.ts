@@ -23,7 +23,7 @@ async function main() {
       name: 'Arraiá nu Quintal 2',
       description:
         'O maior arraiá da cidade! Venha curtir forró, quadrilha, comidas típicas e muito mais. Uma noite inesquecível para toda a família.',
-      date: new Date('2026-06-19T18:30:00-03:00'),
+      date: new Date('2026-06-20T17:30:00-03:00'),
       location: 'Quintal Escola Feitos de Cem',
       isActive: true,
       ticketTypes: {

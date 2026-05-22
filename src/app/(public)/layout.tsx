@@ -2,6 +2,28 @@ import { CartProvider } from '@/components/CartProvider'
 import { Navbar } from '@/components/Navbar'
 import Link from 'next/link'
 
+function AnnouncementBanner() {
+  return (
+    <div style={{
+      background: 'linear-gradient(90deg, #e65c00 0%, #f9d423 100%)',
+      padding: '12px 20px',
+      textAlign: 'center',
+    }}>
+      <p style={{
+        margin: 0,
+        fontSize: 14,
+        fontWeight: 600,
+        color: '#1a0a00',
+        lineHeight: 1.5,
+        maxWidth: 780,
+        marginInline: 'auto',
+      }}>
+        📣 <strong>Mudança de data!</strong> Percebemos que no dia anteriormente divulgado teremos jogo do Brasil, e para que todos possam aproveitar cada momento da nossa festa com tranquilidade e alegria, transferimos o nosso Arraiá para o dia <strong>20/06/2026</strong>, a partir de <strong>18h30</strong>! 🎉🇧🇷
+      </p>
+    </div>
+  )
+}
+
 function Footer() {
   return (
     <footer className="site-footer">
@@ -19,7 +41,7 @@ function Footer() {
           </Link>
           <p style={{ fontSize: 13, color: 'rgba(253,248,240,0.5)', lineHeight: 1.65, margin: 0, maxWidth: 220 }}>
             O maior arraiá do Quintal!<br />
-            Sexta, 19 de junho · 18h30
+            Sábado, 20 de junho · 17h30
           </p>
           {/* Accent pill */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 18, padding: '5px 12px', borderRadius: 999, background: 'rgba(245,168,0,0.14)', border: '1px solid rgba(245,168,0,0.25)' }}>
@@ -76,6 +98,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <CartProvider>
       <Navbar />
+      <AnnouncementBanner />
       <main className="flex-1">{children}</main>
       <Footer />
     </CartProvider>

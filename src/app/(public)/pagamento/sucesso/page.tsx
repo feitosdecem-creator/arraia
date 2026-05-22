@@ -229,7 +229,7 @@ export default async function PagamentoSucessoPage() {
                 Arraiá nu Quintal 2
               </div>
               <div style={{ fontSize: 13, color: 'rgba(253,250,245,0.5)' }}>
-                Sex, 19 de junho · 18h30 · Quintal FDC
+                Sáb, 20 de junho · 17h30 · Quintal FDC
               </div>
             </div>
 
