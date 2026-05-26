@@ -28,6 +28,7 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
   const [timeLeft, setTimeLeft] = useState(0)
   const [syncing, setSyncing] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
+  const [sessionExpired, setSessionExpired] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
@@ -58,13 +59,18 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
       if (stopped || timeLeftRef.current <= 0) return
       try {
         const res = await fetch(`/api/orders/${orderId}/status`)
+        if (res.status === 401) {
+          stopped = true
+          setSessionExpired(true)
+          return
+        }
         const data = await res.json()
         if (data.status === 'PAID') {
           stopped = true
           router.push('/pagamento/sucesso')
           return
         }
-      } catch { /* ignore network errors */ }
+      } catch { /* ignore transient network errors */ }
 
       if (stopped) return
       attempt++
@@ -117,6 +123,13 @@ export function PixPayment({ orderId, pixQrCode, pixQrCodeText, expiresAt }: Pix
 
   return (
     <div style={{ padding: '8px 0 40px' }}>
+      {/* Session expired warning */}
+      {sessionExpired && (
+        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(216,56,56,0.08)', border: '1px solid rgba(216,56,56,0.2)', borderRadius: 12, color: 'var(--fdc-danger)', fontSize: 14, textAlign: 'center' }}>
+          Sua sessão expirou. <a href="/entrar" style={{ fontWeight: 700, color: 'var(--fdc-danger)' }}>Entre novamente</a> para verificar seu pagamento.
+        </div>
+      )}
+
       {/* Pending badge */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 999, background: 'rgba(244,183,59,0.18)', color: 'var(--fdc-sun-deep)', fontSize: 13, fontWeight: 600 }}>

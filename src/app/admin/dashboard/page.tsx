@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { SyncOrderButton } from './SyncOrderButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -261,7 +262,7 @@ export default async function DashboardPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ background: 'var(--bg-sunken)' }}>
-                  {['Comprador', 'Ingressos', 'Valor', 'Status', 'Data'].map((h) => (
+                  {['Comprador', 'Ingressos', 'Valor', 'Status', 'Data', ''].map((h) => (
                     <th
                       key={h}
                       style={{
@@ -342,6 +343,11 @@ export default async function DashboardPage() {
                         }}
                       >
                         {format(order.createdAt, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                      </td>
+                      <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
+                        {order.status === 'AWAITING_PAYMENT' && (
+                          <SyncOrderButton orderId={order.id} />
+                        )}
                       </td>
                     </tr>
                   )

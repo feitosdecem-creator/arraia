@@ -337,7 +337,7 @@ function OrderSummary({ items, total }: { items: ReturnType<typeof useCart>['ite
 // ─── Main checkout page ───────────────────────────────────────
 export default function CheckoutPage() {
   const { data: session, status } = useSession()
-  const { items, total } = useCart()
+  const { items, total, hydrated } = useCart()
   const router = useRouter()
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
@@ -360,6 +360,16 @@ export default function CheckoutPage() {
     } finally {
       setOrderLoading(false)
     }
+  }
+
+  // Wait for localStorage hydration before deciding if cart is empty.
+  // Without this guard, the first render always sees items=[] and flashes the empty-cart screen.
+  if (!hydrated) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <span className="auth-spinner" style={{ width: 32, height: 32, borderWidth: 3, borderTopColor: 'var(--fdc-tangerine)', borderColor: 'var(--line-2)' }} />
+      </div>
+    )
   }
 
   if (items.length === 0 && !orderLoading) {

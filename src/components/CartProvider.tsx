@@ -11,6 +11,7 @@ export type CartItem = {
 
 type CartContextType = {
   items: CartItem[]
+  hydrated: boolean
   addItem: (item: Omit<CartItem, 'quantity'>) => void
   removeItem: (ticketTypeId: string) => void
   updateQuantity: (ticketTypeId: string, quantity: number) => void
@@ -23,19 +24,22 @@ const CartContext = createContext<CartContextType | null>(null)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem('cart')
       if (stored) setItems(JSON.parse(stored))
     } catch {
-      // ignore
+      // ignore malformed data
     }
+    setHydrated(true)
   }, [])
 
   useEffect(() => {
+    if (!hydrated) return
     localStorage.setItem('cart', JSON.stringify(items))
-  }, [items])
+  }, [items, hydrated])
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     setItems((prev) => {
@@ -73,7 +77,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount }}
+      value={{ items, hydrated, addItem, removeItem, updateQuantity, clearCart, total, itemCount }}
     >
       {children}
     </CartContext.Provider>

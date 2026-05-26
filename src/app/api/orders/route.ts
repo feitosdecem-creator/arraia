@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
 
     const { items } = parsed.data
 
-    // Get ticket type prices
     const ticketTypes = await prisma.ticketType.findMany({
       where: {
         id: { in: items.map((i) => i.ticketTypeId) },
@@ -53,9 +52,8 @@ export async function POST(req: NextRequest) {
       return sum + tt.price * item.quantity
     }, 0)
 
-    // Create order and update stock atomically
+    // Create order and decrement stock atomically
     const order = await prisma.$transaction(async (tx) => {
-      // Check and decrement stock for each item
       for (const item of items) {
         const result = await tx.$executeRaw`
           UPDATE ticket_types
@@ -67,8 +65,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Create order
-      const newOrder = await tx.order.create({
+      return tx.order.create({
         data: {
           userId: session.user.id,
           status: 'PENDING',
@@ -85,11 +82,9 @@ export async function POST(req: NextRequest) {
           },
         },
       })
-
-      return newOrder
     })
 
-    // Create PIX payment
+    // Create PIX payment — if this fails we must restore stock
     let pixData
     try {
       pixData = await createPixPayment({
@@ -98,13 +93,23 @@ export async function POST(req: NextRequest) {
         payerEmail: session.user.email,
         payerName: session.user.name,
       })
-    } catch {
-      // Update order to cancelled if PIX fails
-      await prisma.order.update({ where: { id: order.id }, data: { status: 'CANCELLED' } })
-      return NextResponse.json({ error: 'Erro ao gerar PIX' }, { status: 502 })
+    } catch (pixErr) {
+      console.error('[orders] PIX creation failed, restoring stock:', pixErr)
+      // Restore stock and cancel order atomically
+      await prisma.$transaction(async (tx) => {
+        for (const item of items) {
+          await tx.$executeRaw`
+            UPDATE ticket_types
+            SET sold = GREATEST(0, sold - ${item.quantity})
+            WHERE id = ${item.ticketTypeId}
+          `
+        }
+        await tx.order.update({ where: { id: order.id }, data: { status: 'CANCELLED' } })
+      })
+      return NextResponse.json({ error: 'Erro ao gerar PIX. Tente novamente.' }, { status: 502 })
     }
 
-    // Update order with PIX data
+    // Save PIX data to order
     await prisma.order.update({
       where: { id: order.id },
       data: {
@@ -126,7 +131,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof Error && err.message === 'SOLD_OUT') {
       return NextResponse.json({ error: 'Ingressos esgotados' }, { status: 409 })
     }
-    console.error('Order error:', err)
+    console.error('[orders] Error:', err)
     return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }

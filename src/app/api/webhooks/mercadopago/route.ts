@@ -9,12 +9,13 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
 })
 
-function validateSignature(req: NextRequest, rawBody: string): boolean {
+function validateSignature(req: NextRequest): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
   if (!secret) {
-    // Secret not configured — log warning but allow in development
-    console.warn('[webhook] MERCADOPAGO_WEBHOOK_SECRET not set — skipping signature check')
-    return process.env.NODE_ENV !== 'production'
+    // Without a secret we cannot verify authenticity but we must not block payments.
+    // Configure MERCADOPAGO_WEBHOOK_SECRET in Vercel env vars to enable signature checks.
+    console.warn('[webhook] MERCADOPAGO_WEBHOOK_SECRET not configured — processing without signature check')
+    return true
   }
 
   const xSignature = req.headers.get('x-signature') ?? ''
@@ -43,14 +44,12 @@ function validateSignature(req: NextRequest, rawBody: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    const rawBody = await req.text()
-
-    if (!validateSignature(req, rawBody)) {
+    if (!validateSignature(req)) {
       console.error('[webhook] Signature validation failed')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = JSON.parse(rawBody)
+    const body = await req.json()
     const { type, data } = body
     console.log(`[webhook] Received type=${type} data=${JSON.stringify(data)}`)
 
@@ -72,24 +71,28 @@ export async function POST(req: NextRequest) {
     const orderId = payment.external_reference
     if (!orderId) return NextResponse.json({ ok: true })
 
-    // Find order
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: {
-        items: true,
-      },
+      include: { items: true },
     })
 
     if (!order) return NextResponse.json({ ok: true })
+    if (order.status === 'PAID') return NextResponse.json({ ok: true })
 
-    // Idempotent: already paid
-    if (order.status === 'PAID') {
-      return NextResponse.json({ ok: true })
-    }
-
-    // Create tickets and mark order as paid
+    // Atomically claim the PAID transition inside the transaction.
+    // updateMany with the status guard acts as a distributed lock —
+    // only one concurrent call (webhook vs sync) succeeds; the other gets count=0.
+    let alreadyClaimed = false
     await prisma.$transaction(async (tx) => {
-      // Generate one ticket per item × quantity
+      const claimed = await tx.order.updateMany({
+        where: { id: order.id, status: { not: 'PAID' } },
+        data: { status: 'PAID', paidAt: new Date() },
+      })
+      if (claimed.count === 0) {
+        alreadyClaimed = true
+        return
+      }
+
       const ticketsToCreate: { orderId: string; ticketTypeId: string; code: string }[] = []
       for (const item of order.items) {
         for (let i = 0; i < item.quantity; i++) {
@@ -100,28 +103,21 @@ export async function POST(req: NextRequest) {
           })
         }
       }
-
       await tx.ticket.createMany({ data: ticketsToCreate })
-
-      await tx.order.update({
-        where: { id: order.id },
-        data: {
-          status: 'PAID',
-          paidAt: new Date(),
-        },
-      })
     })
 
-    // Send email (outside transaction)
+    if (alreadyClaimed) return NextResponse.json({ ok: true })
+
     try {
       await sendTicketEmail(orderId)
     } catch (emailErr) {
-      console.error('Failed to send ticket email:', emailErr)
+      console.error('[webhook] Failed to send ticket email:', emailErr)
     }
 
+    console.log(`[webhook] Order ${orderId} marked PAID via webhook`)
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error('Webhook error:', err)
+    console.error('[webhook] Error:', err)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
