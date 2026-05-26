@@ -2,28 +2,6 @@ import { CartProvider } from '@/components/CartProvider'
 import { Navbar } from '@/components/Navbar'
 import Link from 'next/link'
 
-function AnnouncementBanner() {
-  return (
-    <div style={{
-      background: 'linear-gradient(90deg, #e65c00 0%, #f9d423 100%)',
-      padding: '12px 20px',
-      textAlign: 'center',
-    }}>
-      <p style={{
-        margin: 0,
-        fontSize: 14,
-        fontWeight: 600,
-        color: '#1a0a00',
-        lineHeight: 1.5,
-        maxWidth: 780,
-        marginInline: 'auto',
-      }}>
-        📣 <strong>Mudança de data!</strong> Percebemos que no dia anteriormente divulgado teremos jogo do Brasil, e para que todos possam aproveitar cada momento da nossa festa com tranquilidade e alegria, transferimos o nosso Arraiá para o dia <strong>20/06/2026</strong>, a partir de <strong>18h30</strong>! 🎉🇧🇷
-      </p>
-    </div>
-  )
-}
-
 function Footer() {
   return (
     <footer className="site-footer">
@@ -98,7 +76,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <CartProvider>
       <Navbar />
-      <AnnouncementBanner />
       <main className="flex-1">{children}</main>
       <Footer />
     </CartProvider>
