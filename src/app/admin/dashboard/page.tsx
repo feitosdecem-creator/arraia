@@ -89,7 +89,7 @@ const statusLabel: Record<string, string> = {
   PAID: 'Pago',
   AWAITING_PAYMENT: 'Aguardando',
   PENDING: 'Pendente',
-  EXPIRED: 'Expirado',
+  EXPIRED: '⚠️ Expirado',
   CANCELLED: 'Cancelado',
 }
 
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
     prisma.ticket.count(),
     prisma.ticket.count({ where: { usedAt: { not: null } } }),
     prisma.order.findMany({
-      where: { status: { in: ['PAID', 'AWAITING_PAYMENT', 'PENDING'] } },
+      where: { status: { in: ['PAID', 'AWAITING_PAYMENT', 'PENDING', 'EXPIRED'] } },
       orderBy: { createdAt: 'desc' },
       take: 10,
       include: {
@@ -345,7 +345,7 @@ export default async function DashboardPage() {
                         {format(order.createdAt, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                       </td>
                       <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
-                        {order.status === 'AWAITING_PAYMENT' && (
+                        {(order.status === 'AWAITING_PAYMENT' || order.status === 'EXPIRED') && (
                           <SyncOrderButton orderId={order.id} />
                         )}
                       </td>
