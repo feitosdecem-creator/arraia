@@ -411,7 +411,7 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+      <div className="adm-toolbar">
         <input
           placeholder="Buscar por nome…"
           value={filterName}
@@ -438,26 +438,28 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
           <option value="none">Sem entregas</option>
         </select>
         <div style={{ flex: 1 }} />
-        <a
-          href="/admin/rifas/imprimir"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
-        >
-          🖨 Imprimir lista
-        </a>
-        <a
-          href="/api/admin/rifas/export"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
-        >
-          ⬇ Exportar CSV
-        </a>
-        <button
-          onClick={() => setModal({ type: 'delivery', student: null })}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, border: 'none', background: 'var(--fdc-tangerine)', color: 'var(--fdc-cream)', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          + Nova entrega
-        </button>
+        <div className="adm-toolbar-actions" style={{ display: 'flex', gap: 8 }}>
+          <a
+            href="/admin/rifas/imprimir"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
+          >
+            🖨 Imprimir
+          </a>
+          <a
+            href="/api/admin/rifas/export"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
+          >
+            ⬇ CSV
+          </a>
+          <button
+            onClick={() => setModal({ type: 'delivery', student: null })}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, border: 'none', background: 'var(--fdc-tangerine)', color: 'var(--fdc-cream)', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            + Nova entrega
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -466,11 +468,11 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ background: 'var(--bg-sunken)' }}>
-                <th style={thStyle}>Aluno</th>
-                <th style={thStyle}>Turma</th>
-                <th style={thStyle}>Responsável</th>
+                <th style={{ ...thStyle, minWidth: 140 }}>Aluno</th>
+                <th className="adm-col-hide-mobile" style={thStyle}>Turma</th>
+                <th className="adm-col-hide-mobile" style={thStyle}>Responsável</th>
                 <th style={{ ...thStyle, textAlign: 'center' }}>Entregues</th>
-                <th style={{ ...thStyle, textAlign: 'center' }}>Devolvidos</th>
+                <th className="adm-col-hide-mobile" style={{ ...thStyle, textAlign: 'center' }}>Devolvidos</th>
                 <th style={{ ...thStyle, textAlign: 'center' }}>Saldo</th>
                 <th style={thStyle}>Status</th>
                 <th style={thStyle} />
@@ -479,7 +481,7 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
             <tbody>
               {filtered.map((s, i) => (
                 <tr key={s.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--line-2)' : 'none' }}>
-                  <td style={tdStyle}>
+                  <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                     <button
                       onClick={() => setModal({ type: 'detail', student: s })}
                       style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
@@ -487,10 +489,10 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
                       <span style={{ fontWeight: 600, color: 'var(--fdc-tangerine)', fontSize: 13 }}>{s.name}</span>
                     </button>
                   </td>
-                  <td style={{ ...tdStyle, color: 'var(--fg-2)' }}>{s.classroom}</td>
-                  <td style={{ ...tdStyle, color: 'var(--fg-2)' }}>{s.guardian}</td>
+                  <td className="adm-col-hide-mobile" style={{ ...tdStyle, color: 'var(--fg-2)' }}>{s.classroom}</td>
+                  <td className="adm-col-hide-mobile" style={{ ...tdStyle, color: 'var(--fg-2)' }}>{s.guardian}</td>
                   <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--font-mono)' }}>{s.delivered}</td>
-                  <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 600, color: 'var(--fdc-leaf-deep)', fontFamily: 'var(--font-mono)' }}>{s.returned}</td>
+                  <td className="adm-col-hide-mobile" style={{ ...tdStyle, textAlign: 'center', fontWeight: 600, color: 'var(--fdc-leaf-deep)', fontFamily: 'var(--font-mono)' }}>{s.returned}</td>
                   <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, color: s.balance > 0 ? 'var(--fdc-sun-deep)' : 'var(--fg-3)', fontFamily: 'var(--font-mono)' }}>{s.balance}</td>
                   <td style={tdStyle}><StatusBadge student={s} /></td>
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>

@@ -46,9 +46,36 @@
 }
 
 /* ============================================================
-   Mobile
+   Responsive utilities
+   ============================================================ */
+
+/* Table: force min-width so columns never compress — horizontal scroll handles overflow */
+.admin-table-wrap table {
+  min-width: 560px;
+}
+
+/* Columns hidden on mobile */
+.adm-col-hide-mobile { /* visible on desktop */ }
+
+/* Toolbar: filters + action buttons */
+.adm-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* Hero card flex sections */
+.adm-hero-wrap { display: flex; }
+.adm-hero-left { flex: 0 0 58%; }
+.adm-hero-right { flex: 1; }
+
+/* ============================================================
+   Mobile — 768px
    ============================================================ */
 @media (max-width: 768px) {
+  /* ── Sidebar collapses to horizontal icon bar ── */
   .admin-sidebar {
     width: 100% !important;
     min-height: unset !important;
@@ -58,12 +85,13 @@
     align-items: center;
     overflow-x: auto;
     overflow-y: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
   }
 
   .admin-sidebar-brand {
     flex-shrink: 0;
     margin-bottom: 0 !important;
-    margin-right: 12px;
+    margin-right: 8px;
   }
 
   .admin-sidebar-brand .adm-brand-text {
@@ -98,5 +126,57 @@
 
   .admin-main {
     padding: 20px 16px !important;
+  }
+
+  /* ── Hero card: stack vertically ── */
+  .adm-hero-wrap {
+    flex-direction: column !important;
+  }
+
+  .adm-hero-left {
+    flex: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(56,48,48,0.07) !important;
+    padding: 28px 24px !important;
+  }
+
+  .adm-hero-right {
+    padding: 24px !important;
+    flex-direction: row !important;
+    display: flex;
+    gap: 0;
+  }
+
+  /* ── Metric grid: 2 × 2 ── */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* ── Hide unused table columns ── */
+  .adm-col-hide-mobile {
+    display: none !important;
+  }
+
+  /* ── Toolbar: search full-width, buttons wrap neatly ── */
+  .adm-toolbar {
+    gap: 8px;
+  }
+
+  .adm-toolbar input {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .adm-toolbar select {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .adm-toolbar .adm-toolbar-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
   }
 }

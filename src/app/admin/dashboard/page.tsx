@@ -193,13 +193,13 @@ export default async function DashboardPage() {
 
       {/* ── Hero card ── */}
       <div
+        className="adm-hero-wrap"
         style={{
           background: '#ffffff',
           borderRadius: 24,
           boxShadow: 'var(--adm-card-shadow)',
           marginBottom: 18,
           overflow: 'hidden',
-          display: 'flex',
           minHeight: 200,
           position: 'relative',
         }}
@@ -219,8 +219,8 @@ export default async function DashboardPage() {
 
         {/* Left — revenue */}
         <div
+          className="adm-hero-left"
           style={{
-            flex: '0 0 58%',
             padding: '36px 40px',
             borderRight: '1px solid rgba(56,48,48,0.06)',
             background:
@@ -330,6 +330,7 @@ export default async function DashboardPage() {
 
         {/* Right — secondary stats */}
         <div
+          className="adm-hero-right"
           style={{
             flex: 1,
             padding: '36px 32px',
