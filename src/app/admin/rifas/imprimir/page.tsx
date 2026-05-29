@@ -32,7 +32,7 @@ export default async function RiffasPrintPage() {
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          @page { margin: 1.5cm; }
+          @page { size: A4 landscape; margin: 1.2cm 1.5cm; }
         }
         * { box-sizing: border-box; }
         body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #111; background: #fff; }
