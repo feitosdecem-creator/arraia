@@ -229,15 +229,42 @@ export default async function DashboardPage() {
         >
           <div
             style={{
-              fontSize: 11,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--fdc-tangerine)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
               marginBottom: 10,
             }}
           >
-            Arraiá nu Quintal 2
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                background: '#ffffff',
+                boxShadow: '0 1px 6px rgba(56,48,48,0.12)',
+                display: 'grid',
+                placeItems: 'center',
+                fontFamily: 'var(--font-serif)',
+                fontWeight: 700,
+                fontSize: 19,
+                color: 'var(--fdc-tangerine)',
+                flexShrink: 0,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              A
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: 'var(--fdc-tangerine)',
+              }}
+            >
+              Arraiá nu Quintal 2
+            </div>
           </div>
           <div
             style={{
