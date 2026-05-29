@@ -439,6 +439,14 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
         </select>
         <div style={{ flex: 1 }} />
         <a
+          href="/admin/rifas/imprimir"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
+        >
+          🖨 Imprimir lista
+        </a>
+        <a
           href="/api/admin/rifas/export"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: '1px solid var(--line-2)', background: 'var(--bg-surface)', color: 'var(--fg-2)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
         >
