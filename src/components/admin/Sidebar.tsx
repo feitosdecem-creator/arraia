@@ -9,6 +9,7 @@ const links = [
   { href: '/admin/tipos', label: 'Tipos de ingresso', icon: '🎫' },
   { href: '/admin/ingressos', label: 'Ingressos emitidos', icon: '🎟️' },
   { href: '/admin/participantes', label: 'Participantes', icon: '👥' },
+  { href: '/admin/rifas', label: 'Rifas', icon: '🎟️' },
   { href: '/admin/validar', label: 'Validar entrada', icon: '📷' },
   { href: '/admin/financeiro', label: 'Financeiro', icon: '💰' },
   { href: '/admin/configuracoes', label: 'Configurações', icon: '⚙️' },
