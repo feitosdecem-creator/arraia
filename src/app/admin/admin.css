@@ -1,0 +1,102 @@
+/* ============================================================
+   Admin shell — design tokens & overrides
+   ============================================================ */
+
+:root {
+  /* Sidebar */
+  --adm-sidebar-from:        #344129;
+  --adm-sidebar-to:          #233018;
+  --adm-sidebar-width:       236px;
+  --adm-sidebar-text:        rgba(253, 250, 245, 0.72);
+  --adm-sidebar-text-active: #FDFAF5;
+  --adm-sidebar-active-bg:   rgba(253, 250, 245, 0.13);
+  --adm-sidebar-hover-bg:    rgba(253, 250, 245, 0.06);
+  --adm-sidebar-sep:         rgba(253, 250, 245, 0.10);
+
+  /* Shell */
+  --adm-bg:           #F4EFE8;
+  --adm-card-radius:  20px;
+  --adm-card-shadow:  0 2px 10px rgba(56, 48, 48, 0.05), 0 0 0 1px rgba(56, 48, 48, 0.045);
+}
+
+/* Shell */
+.admin-shell {
+  background: var(--adm-bg) !important;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background: linear-gradient(180deg, var(--adm-sidebar-from) 0%, var(--adm-sidebar-to) 100%) !important;
+  border-right: none !important;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Generic admin card (no extra classes needed on existing pages) */
+.adm-card {
+  background: #ffffff;
+  border-radius: var(--adm-card-radius);
+  box-shadow: var(--adm-card-shadow);
+}
+
+/* Override fdc-card inside admin context */
+.admin-main .fdc-card {
+  border-radius: var(--adm-card-radius) !important;
+  box-shadow: var(--adm-card-shadow) !important;
+  border: none !important;
+}
+
+/* ============================================================
+   Mobile
+   ============================================================ */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 100% !important;
+    min-height: unset !important;
+    height: 58px;
+    flex-direction: row !important;
+    padding: 0 12px !important;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .admin-sidebar-brand {
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
+    margin-right: 12px;
+  }
+
+  .admin-sidebar-brand .adm-brand-text {
+    display: none;
+  }
+
+  .admin-sidebar-nav {
+    flex-direction: row !important;
+    gap: 2px !important;
+    align-items: center;
+    flex: 1;
+    overflow-x: auto;
+  }
+
+  .admin-sidebar-nav .adm-nav-label {
+    display: none;
+  }
+
+  .admin-sidebar-nav a {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0;
+  }
+
+  .admin-sidebar-logout {
+    display: none;
+  }
+
+  .admin-shell {
+    flex-direction: column !important;
+  }
+
+  .admin-main {
+    padding: 20px 16px !important;
+  }
+}

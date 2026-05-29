@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/admin/Sidebar'
+import './admin.css'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -11,7 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: 'var(--fdc-cream-deep)',
+        background: 'var(--adm-bg)',
       }}
     >
       <Sidebar />
@@ -20,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         style={{
           flex: 1,
           overflow: 'auto',
-          padding: '28px 32px',
+          padding: '36px 40px',
         }}
       >
         {children}
