@@ -136,14 +136,15 @@ model RaffleStudent {
 }
 
 model RaffleTransaction {
-  id        String                @id @default(cuid())
-  studentId String
-  type      RaffleTransactionType
-  quantity  Int
-  note      String?
-  createdBy String
-  createdAt DateTime              @default(now())
-  student   RaffleStudent         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id         String                @id @default(cuid())
+  studentId  String
+  type       RaffleTransactionType
+  quantity   Int
+  amountPaid Int?
+  note       String?
+  createdBy  String
+  createdAt  DateTime              @default(now())
+  student    RaffleStudent         @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("raffle_transactions")
 }

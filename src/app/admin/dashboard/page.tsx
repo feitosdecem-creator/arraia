@@ -95,7 +95,7 @@ const statusStyle: Record<string, { background: string; color: string }> = {
 }
 
 export default async function DashboardPage() {
-  const [totalRevenue, totalTickets, usedTickets, recentOrders, totalCapacity, pendingOrders] =
+  const [totalRevenue, totalTickets, usedTickets, recentOrders, totalCapacity, pendingOrders, rafflePaid] =
     await Promise.all([
       prisma.order.aggregate({ where: { status: 'PAID' }, _sum: { totalAmount: true } }),
       prisma.ticket.count(),
@@ -108,10 +108,12 @@ export default async function DashboardPage() {
       }),
       prisma.ticketType.aggregate({ _sum: { stock: true } }),
       prisma.order.count({ where: { status: 'AWAITING_PAYMENT' } }),
+      prisma.raffleTransaction.aggregate({ where: { type: 'RETURN', amountPaid: { not: null } }, _sum: { amountPaid: true } }),
     ])
 
   const revenue = totalRevenue._sum.totalAmount ?? 0
   const capacity = totalCapacity._sum.stock ?? 0
+  const raffleRevenue = rafflePaid._sum.amountPaid ?? 0
   const revenueFormatted = 'R$ ' + (revenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
   const soldPct = capacity > 0 ? Math.round((totalTickets / capacity) * 100) : 0
   const today = format(new Date(), "EEE, dd 'de' MMM yyyy", { locale: ptBR })
@@ -415,6 +417,22 @@ export default async function DashboardPage() {
             </div>
             <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4 }}>
               pedidos confirmados
+            </div>
+          </div>
+
+          <div style={{ height: 1, background: 'rgba(56,48,48,0.07)', margin: '20px 0' }} />
+
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em', color: 'var(--fg-3)', marginBottom: 6 }}>
+              Rifas arrecadadas
+            </div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1, color: raffleRevenue > 0 ? 'var(--fdc-leaf-deep)' : 'var(--fg-3)' }}>
+              {raffleRevenue > 0
+                ? 'R$ ' + (raffleRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                : '—'}
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4 }}>
+              devoluções com pagamento
             </div>
           </div>
         </div>

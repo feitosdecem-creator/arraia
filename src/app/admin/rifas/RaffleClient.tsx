@@ -8,6 +8,7 @@ type Transaction = {
   id: string
   type: 'DELIVERY' | 'RETURN'
   quantity: number
+  amountPaid: number | null
   note: string | null
   createdBy: string
   createdAt: string
@@ -23,6 +24,7 @@ export type Student = {
   returned: number
   balance: number
   deliveryCount: number
+  totalPaid: number
   transactions: Transaction[]
 }
 
@@ -222,19 +224,28 @@ function DeliveryModal({ students, preStudent, onClose, onSuccess }: {
 
 function ReturnModal({ student, onClose, onSuccess }: { student: Student; onClose: () => void; onSuccess: () => void }) {
   const [qty, setQty] = useState(1)
+  const [amountStr, setAmountStr] = useState('')
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const parsedAmount = (() => {
+    const v = amountStr.trim().replace(',', '.')
+    if (!v) return null
+    const n = parseFloat(v)
+    return isNaN(n) || n < 0 ? null : Math.round(n * 100)
+  })()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (amountStr.trim() && parsedAmount === null) { setError('Valor inválido'); return }
     setLoading(true)
     setError('')
     try {
       const res = await fetch('/api/admin/rifas/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: student.id, type: 'RETURN', quantity: qty, note }),
+        body: JSON.stringify({ studentId: student.id, type: 'RETURN', quantity: qty, amountPaid: parsedAmount, note }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'Erro ao registrar'); return }
@@ -268,6 +279,25 @@ function ReturnModal({ student, onClose, onSuccess }: { student: Student; onClos
         </div>
 
         <div>
+          <label style={labelStyle}>Valor recebido <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: 'var(--fg-2)', pointerEvents: 'none' }}>R$</span>
+            <input
+              value={amountStr}
+              onChange={(e) => setAmountStr(e.target.value)}
+              placeholder="0,00"
+              inputMode="decimal"
+              style={{ ...inputStyle, paddingLeft: 36 }}
+            />
+          </div>
+          {parsedAmount !== null && (
+            <p style={{ margin: '5px 0 0', fontSize: 12, color: 'var(--fdc-leaf-deep)' }}>
+              ✓ {(parsedAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} registrado
+            </p>
+          )}
+        </div>
+
+        <div>
           <label style={labelStyle}>Observação <span style={{ fontWeight: 400, textTransform: 'none' }}>(opcional)</span></label>
           <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: devolveu na festa" style={inputStyle} />
         </div>
@@ -298,14 +328,15 @@ function DetailModal({ student, onClose, onReturn }: { student: Student; onClose
       </div>
 
       {/* Summary */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
         {[
           { label: 'Entregues', value: student.delivered, color: 'var(--fdc-tangerine)' },
           { label: 'Devolvidos', value: student.returned, color: 'var(--fdc-leaf-deep)' },
           { label: 'Saldo', value: student.balance, color: student.balance > 0 ? 'var(--fdc-sun-deep)' : 'var(--fg-3)' },
+          { label: 'Arrecadado', value: student.totalPaid > 0 ? 'R$ ' + (student.totalPaid / 100).toFixed(2).replace('.', ',') : '—', color: student.totalPaid > 0 ? 'var(--fdc-leaf-deep)' : 'var(--fg-3)' },
         ].map((m) => (
-          <div key={m.label} style={{ padding: '12px 14px', background: 'var(--bg-sunken)', borderRadius: 10, textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: m.color }}>{m.value}</div>
+          <div key={m.label} style={{ padding: '12px 10px', background: 'var(--bg-sunken)', borderRadius: 10, textAlign: 'center' }}>
+            <div style={{ fontSize: m.label === 'Arrecadado' ? 14 : 22, fontWeight: 700, color: m.color, lineHeight: 1.2 }}>{m.value}</div>
             <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>{m.label}</div>
           </div>
         ))}
@@ -324,6 +355,11 @@ function DetailModal({ student, onClose, onReturn }: { student: Student; onClose
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>
                     {t.type === 'DELIVERY' ? 'Entrega' : 'Devolução'} de {t.quantity} bloquinho{t.quantity !== 1 ? 's' : ''}
+                    {t.type === 'RETURN' && t.amountPaid != null && t.amountPaid > 0 && (
+                      <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 700, color: 'var(--fdc-leaf-deep)' }}>
+                        + R$ {(t.amountPaid / 100).toFixed(2).replace('.', ',')}
+                      </span>
+                    )}
                   </div>
                   {t.note && <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>{t.note}</div>}
                 </div>
@@ -374,8 +410,12 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
     const totalDelivered = students.reduce((sum, s) => sum + s.delivered, 0)
     const totalReturned = students.reduce((sum, s) => sum + s.returned, 0)
     const totalBalance = students.reduce((sum, s) => sum + s.balance, 0)
-    return { families: students.length, delivered: totalDelivered, returned: totalReturned, balance: totalBalance }
+    const totalPaid = students.reduce((sum, s) => sum + s.totalPaid, 0)
+    return { families: students.length, delivered: totalDelivered, returned: totalReturned, balance: totalBalance, totalPaid }
   }, [students])
+
+  const fmt = (centavos: number) =>
+    'R$ ' + (centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   const refreshStudents = async () => {
     try {
@@ -403,11 +443,12 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
   return (
     <>
       {/* Metrics */}
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 28 }}>
         <MetricCard icon="👨‍👩‍👧" label="Famílias" value={metrics.families} accentBg="rgba(236,82,18,0.12)" />
-        <MetricCard icon="📦" label="Bloquinhos entregues" value={metrics.delivered} sub={`${metrics.delivered * 30} rifas`} accentBg="rgba(244,183,59,0.22)" />
-        <MetricCard icon="↩️" label="Bloquinhos devolvidos" value={metrics.returned} accentBg="rgba(111,168,74,0.18)" />
-        <MetricCard icon="🔄" label="Em circulação" value={metrics.balance} sub={`${metrics.balance * 30} rifas estimadas`} accentBg="rgba(54,88,211,0.14)" />
+        <MetricCard icon="📦" label="Entregues" value={metrics.delivered} sub={`${metrics.delivered * 30} rifas`} accentBg="rgba(244,183,59,0.22)" />
+        <MetricCard icon="↩️" label="Devolvidos" value={metrics.returned} accentBg="rgba(111,168,74,0.18)" />
+        <MetricCard icon="🔄" label="Em circulação" value={metrics.balance} sub={`${metrics.balance * 30} rifas`} accentBg="rgba(54,88,211,0.14)" />
+        <MetricCard icon="💵" label="Arrecadado" value={fmt(metrics.totalPaid)} accentBg="rgba(111,168,74,0.25)" />
       </div>
 
       {/* Toolbar */}
@@ -475,6 +516,7 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
                 <th className="adm-col-hide-mobile" style={{ ...thStyle, textAlign: 'center' }}>Devolvidos</th>
                 <th style={{ ...thStyle, textAlign: 'center' }}>Saldo</th>
                 <th style={thStyle}>Status</th>
+                <th className="adm-col-hide-mobile" style={{ ...thStyle, textAlign: 'right' }}>Pago</th>
                 <th style={thStyle} />
               </tr>
             </thead>
@@ -495,6 +537,9 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
                   <td className="adm-col-hide-mobile" style={{ ...tdStyle, textAlign: 'center', fontWeight: 600, color: 'var(--fdc-leaf-deep)', fontFamily: 'var(--font-mono)' }}>{s.returned}</td>
                   <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 700, color: s.balance > 0 ? 'var(--fdc-sun-deep)' : 'var(--fg-3)', fontFamily: 'var(--font-mono)' }}>{s.balance}</td>
                   <td style={tdStyle}><StatusBadge student={s} /></td>
+                  <td className="adm-col-hide-mobile" style={{ ...tdStyle, textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: s.totalPaid > 0 ? 'var(--fdc-leaf-deep)' : 'var(--fg-3)' }}>
+                    {s.totalPaid > 0 ? fmt(s.totalPaid) : '—'}
+                  </td>
                   <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button

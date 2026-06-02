@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await req.json()
-  const { studentId, newStudent, type, quantity, note } = body
+  const { studentId, newStudent, type, quantity, amountPaid, note } = body
 
   if (!type || !quantity || quantity < 1) {
     return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
@@ -47,11 +47,18 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // amountPaid stored in centavos; only relevant for RETURN
+  const parsedAmount =
+    type === 'RETURN' && typeof amountPaid === 'number' && amountPaid >= 0
+      ? Math.round(amountPaid)
+      : null
+
   const transaction = await prisma.raffleTransaction.create({
     data: {
       studentId: resolvedStudentId,
       type,
       quantity,
+      amountPaid: parsedAmount,
       note: note?.trim() || null,
       createdBy: session.user.name ?? session.user.id,
     },

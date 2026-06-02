@@ -13,6 +13,7 @@ export default async function RifasPage() {
     const delivered = s.transactions.filter((t) => t.type === 'DELIVERY').reduce((sum, t) => sum + t.quantity, 0)
     const returned = s.transactions.filter((t) => t.type === 'RETURN').reduce((sum, t) => sum + t.quantity, 0)
     const deliveryCount = s.transactions.filter((t) => t.type === 'DELIVERY').length
+    const totalPaid = s.transactions.filter((t) => t.type === 'RETURN').reduce((sum, t) => sum + (t.amountPaid ?? 0), 0)
     return {
       id: s.id,
       name: s.name,
@@ -23,10 +24,12 @@ export default async function RifasPage() {
       returned,
       balance: delivered - returned,
       deliveryCount,
+      totalPaid,
       transactions: s.transactions.map((t) => ({
         id: t.id,
         type: t.type as 'DELIVERY' | 'RETURN',
         quantity: t.quantity,
+        amountPaid: t.amountPaid,
         note: t.note,
         createdBy: t.createdBy,
         createdAt: t.createdAt.toISOString(),
