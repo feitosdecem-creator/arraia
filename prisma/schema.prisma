@@ -118,3 +118,36 @@ model Ticket {
 
   @@map("tickets")
 }
+
+enum RaffleTransactionType {
+  DELIVERY
+  RETURN
+  PAYMENT
+  NOTE
+}
+
+model RaffleStudent {
+  id           String               @id @default(cuid())
+  name         String
+  classroom    String
+  guardian     String
+  phone        String?
+  createdAt    DateTime             @default(now())
+  transactions RaffleTransaction[]
+
+  @@map("raffle_students")
+}
+
+model RaffleTransaction {
+  id         String                @id @default(cuid())
+  studentId  String
+  type       RaffleTransactionType
+  quantity   Int                   @default(0)
+  amountPaid Int?
+  note       String?
+  createdBy  String
+  createdAt  DateTime              @default(now())
+  student    RaffleStudent         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("raffle_transactions")
+}

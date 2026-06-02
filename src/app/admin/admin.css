@@ -1,0 +1,255 @@
+/* ============================================================
+   Admin shell — design tokens & overrides
+   ============================================================ */
+
+:root {
+  /* Sidebar */
+  --adm-sidebar-from:        #344129;
+  --adm-sidebar-to:          #233018;
+  --adm-sidebar-width:       236px;
+  --adm-sidebar-text:        rgba(253, 250, 245, 0.72);
+  --adm-sidebar-text-active: #FDFAF5;
+  --adm-sidebar-active-bg:   rgba(253, 250, 245, 0.13);
+  --adm-sidebar-hover-bg:    rgba(253, 250, 245, 0.06);
+  --adm-sidebar-sep:         rgba(253, 250, 245, 0.10);
+
+  /* Shell */
+  --adm-bg:           #F4EFE8;
+  --adm-card-radius:  20px;
+  --adm-card-shadow:  0 2px 10px rgba(56, 48, 48, 0.05), 0 0 0 1px rgba(56, 48, 48, 0.045);
+}
+
+/* Shell */
+.admin-shell {
+  background: var(--adm-bg) !important;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background: linear-gradient(180deg, var(--adm-sidebar-from) 0%, var(--adm-sidebar-to) 100%) !important;
+  border-right: none !important;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Generic admin card (no extra classes needed on existing pages) */
+.adm-card {
+  background: #ffffff;
+  border-radius: var(--adm-card-radius);
+  box-shadow: var(--adm-card-shadow);
+}
+
+/* Override fdc-card inside admin context */
+.admin-main .fdc-card {
+  border-radius: var(--adm-card-radius) !important;
+  box-shadow: var(--adm-card-shadow) !important;
+  border: none !important;
+}
+
+/* ============================================================
+   Drawer (raffle student profile panel)
+   ============================================================ */
+
+.adm-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+.adm-drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.adm-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 480px;
+  background: #fff;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.10);
+  transform: translateX(100%);
+  transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.adm-drawer.open {
+  transform: translateX(0);
+}
+
+/* Metric row for rifas (6-col → 3-col → 2-col) */
+.adm-metric-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1100px) {
+  .adm-metric-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .adm-metric-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Student table (desktop) / card list (mobile) */
+.adm-student-table  { display: block; }
+.adm-student-cards  { display: none; }
+
+/* ============================================================
+   Responsive utilities
+   ============================================================ */
+
+/* Table: force min-width so columns never compress — horizontal scroll handles overflow */
+.admin-table-wrap table {
+  min-width: 560px;
+}
+
+/* Columns hidden on mobile */
+.adm-col-hide-mobile { /* visible on desktop */ }
+
+/* Toolbar: filters + action buttons */
+.adm-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+/* Hero card flex sections */
+.adm-hero-wrap { display: flex; }
+.adm-hero-left { flex: 0 0 58%; }
+.adm-hero-right { flex: 1; }
+
+/* ============================================================
+   Mobile — 768px
+   ============================================================ */
+@media (max-width: 768px) {
+  /* ── Sidebar collapses to horizontal icon bar ── */
+  .admin-sidebar {
+    width: 100% !important;
+    min-height: unset !important;
+    height: 58px;
+    flex-direction: row !important;
+    padding: 0 12px !important;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+  }
+
+  .admin-sidebar-brand {
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
+    margin-right: 8px;
+  }
+
+  .admin-sidebar-brand .adm-brand-text {
+    display: none;
+  }
+
+  .admin-sidebar-nav {
+    flex-direction: row !important;
+    gap: 2px !important;
+    align-items: center;
+    flex: 1;
+    overflow-x: auto;
+  }
+
+  .admin-sidebar-nav .adm-nav-label {
+    display: none;
+  }
+
+  .admin-sidebar-nav a {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0;
+  }
+
+  .admin-sidebar-logout {
+    display: none;
+  }
+
+  .admin-shell {
+    flex-direction: column !important;
+  }
+
+  .admin-main {
+    padding: 20px 16px !important;
+  }
+
+  /* ── Hero card: stack vertically ── */
+  .adm-hero-wrap {
+    flex-direction: column !important;
+  }
+
+  .adm-hero-left {
+    flex: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(56,48,48,0.07) !important;
+    padding: 28px 24px !important;
+  }
+
+  .adm-hero-right {
+    padding: 24px !important;
+    flex-direction: row !important;
+    display: flex;
+    gap: 0;
+  }
+
+  /* ── Metric grid: 2 × 2 ── */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* ── Hide unused table columns ── */
+  .adm-col-hide-mobile {
+    display: none !important;
+  }
+
+  /* ── Toolbar: search full-width, buttons wrap neatly ── */
+  .adm-toolbar {
+    gap: 8px;
+  }
+
+  .adm-toolbar input {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .adm-toolbar select {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .adm-toolbar .adm-toolbar-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  /* ── Drawer: fullscreen on mobile ── */
+  .adm-drawer {
+    width: 100%;
+  }
+  .adm-drawer-backdrop {
+    display: none;
+  }
+
+  /* ── Student list: cards on mobile, hide table ── */
+  .adm-student-table {
+    display: none !important;
+  }
+  .adm-student-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
