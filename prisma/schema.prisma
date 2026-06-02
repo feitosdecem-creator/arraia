@@ -122,6 +122,8 @@ model Ticket {
 enum RaffleTransactionType {
   DELIVERY
   RETURN
+  PAYMENT
+  NOTE
 }
 
 model RaffleStudent {
@@ -129,6 +131,7 @@ model RaffleStudent {
   name         String
   classroom    String
   guardian     String
+  phone        String?
   createdAt    DateTime             @default(now())
   transactions RaffleTransaction[]
 
@@ -139,7 +142,7 @@ model RaffleTransaction {
   id         String                @id @default(cuid())
   studentId  String
   type       RaffleTransactionType
-  quantity   Int
+  quantity   Int                   @default(0)
   amountPaid Int?
   note       String?
   createdBy  String
