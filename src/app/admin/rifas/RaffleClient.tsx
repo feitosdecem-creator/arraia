@@ -473,11 +473,12 @@ function DrawerPanel({
               <button
                 onClick={() => {
                   const url = `${window.location.origin}/familia/${student.code}`
-                  navigator.clipboard.writeText(url).then(() => {
+                  const msg = `Olá! Criamos um link para vocês acompanharem em tempo real a entrega das rifas do Arraiá nu Quintal 2.\n\nSeu link para acompanhar é:\n${url}`
+                  navigator.clipboard.writeText(msg).then(() => {
                     setCopiedLink(true)
                     setTimeout(() => setCopiedLink(false), 2000)
                   }).catch(() => {
-                    window.prompt('Copie o link:', url)
+                    window.prompt('Copie a mensagem:', msg)
                   })
                 }}
                 title="Copiar link da família"
