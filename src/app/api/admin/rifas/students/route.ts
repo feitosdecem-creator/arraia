@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
+import { customAlphabet } from 'nanoid'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 const BOOKLET_VALUE = 15000 // centavos (R$150)
+
+const genCode = customAlphabet('0123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 6)
+
+async function generateUniqueCode(): Promise<string> {
+  for (let i = 0; i < 10; i++) {
+    const code = genCode()
+    const existing = await prisma.raffleStudent.findUnique({ where: { code } })
+    if (!existing) return code
+  }
+  throw new Error('Failed to generate unique student code')
+}
 
 type StudentWithTx = Prisma.RaffleStudentGetPayload<{ include: { transactions: true } }>
 
@@ -24,6 +36,7 @@ function computeStudent(s: StudentWithTx) {
     classroom: s.classroom,
     guardian: s.guardian,
     phone: s.phone,
+    code: s.code,
     createdAt: s.createdAt.toISOString(),
     delivered,
     returned,
@@ -38,6 +51,8 @@ function computeStudent(s: StudentWithTx) {
       type: t.type as 'DELIVERY' | 'RETURN' | 'PAYMENT' | 'NOTE',
       quantity: t.quantity,
       amountPaid: t.amountPaid,
+      paymentMethod: t.paymentMethod,
+      receiptNumber: t.receiptNumber,
       note: t.note,
       createdBy: t.createdBy,
       createdAt: t.createdAt.toISOString(),
@@ -68,12 +83,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Nome, turma e responsável são obrigatórios' }, { status: 400 })
   }
 
+  const code = await generateUniqueCode()
+
   const student = await prisma.raffleStudent.create({
     data: {
       name: name.trim(),
       classroom: classroom.trim(),
       guardian: guardian.trim(),
       phone: phone?.trim() || null,
+      code,
     },
   })
 

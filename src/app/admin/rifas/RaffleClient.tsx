@@ -11,6 +11,8 @@ type Transaction = {
   type: 'DELIVERY' | 'RETURN' | 'PAYMENT' | 'NOTE'
   quantity: number
   amountPaid: number | null
+  paymentMethod: string | null
+  receiptNumber: number | null
   note: string | null
   createdBy: string
   createdAt: string
@@ -22,6 +24,7 @@ export type Student = {
   classroom: string
   guardian: string
   phone: string | null
+  code: string
   createdAt: string
   delivered: number
   returned: number
@@ -108,6 +111,21 @@ function parseReais(str: string): number | null {
   if (!v) return null
   const n = parseFloat(v)
   return isNaN(n) || n < 0 ? null : Math.round(n * 100)
+}
+
+const PAYMENT_METHODS: Record<string, string> = {
+  pix:          'Pix',
+  dinheiro:     'Dinheiro',
+  transferencia:'Transferência',
+  outros:       'Outros',
+}
+
+function methodLabel(m: string | null): string {
+  return m ? (PAYMENT_METHODS[m] ?? m) : ''
+}
+
+function fmtReceipt(n: number): string {
+  return String(n).padStart(5, '0')
 }
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
@@ -214,6 +232,46 @@ function MetricRow({ students }: { students: Student[] }) {
           <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>{c.sub}</div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// ─── ClassroomRankingSection ──────────────────────────────────────────────────
+
+function ClassroomRankingSection({ students }: { students: Student[] }) {
+  const classrooms = useMemo(() => {
+    const map = new Map<string, { name: string; totalPaid: number; expected: number; count: number }>()
+    for (const s of students) {
+      if (s.delivered === 0) continue
+      const key = s.classroom
+      const ex = map.get(key) ?? { name: key, totalPaid: 0, expected: 0, count: 0 }
+      map.set(key, { name: key, totalPaid: ex.totalPaid + s.totalPaid, expected: ex.expected + s.expected, count: ex.count + 1 })
+    }
+    return [...map.values()].sort((a, b) => b.totalPaid - a.totalPaid)
+  }, [students])
+
+  if (classrooms.length < 2) return null
+
+  return (
+    <div className="adm-card" style={{ padding: '20px 24px', marginBottom: 20 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>
+        Ranking por Turma
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {classrooms.map((c, i) => (
+          <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#94A3B8', width: 18, flexShrink: 0, textAlign: 'center' }}>{i + 1}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 600, fontSize: 13, color: '#0F172A', marginBottom: 4 }}>{c.name}</div>
+              <Bar value={c.totalPaid} total={c.expected} />
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: '#15803D' }}>{fmt(c.totalPaid)}</div>
+              <div style={{ fontSize: 11, color: '#94A3B8' }}>{c.count} aluno{c.count !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -365,10 +423,20 @@ function DrawerPanel({
                           {t.amountPaid != null && t.amountPaid > 0 && (
                             <span style={{ marginLeft: 6, color: '#15803D', fontWeight: 700 }}>{fmt(t.amountPaid)}</span>
                           )}
+                          {t.paymentMethod && (
+                            <span style={{ marginLeft: 6, fontSize: 11, color: '#94A3B8', fontWeight: 400 }}>via {methodLabel(t.paymentMethod)}</span>
+                          )}
                         </div>
                         {t.note && <div style={{ fontSize: 12, color: '#64748B', marginTop: 2, wordBreak: 'break-word' }}>{t.note}</div>}
-                        <div style={{ fontSize: 11, color: '#CBD5E1', marginTop: 4 }}>
-                          {t.createdBy} · {format(new Date(t.createdAt), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                          <span style={{ fontSize: 11, color: '#CBD5E1' }}>
+                            {t.createdBy} · {format(new Date(t.createdAt), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                          </span>
+                          {t.receiptNumber != null && (
+                            <a href={`/recibo/${t.receiptNumber}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: 'var(--fdc-tangerine)', textDecoration: 'none', fontWeight: 600 }}>
+                              Recibo #{fmtReceipt(t.receiptNumber)}
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -396,11 +464,21 @@ function DrawerPanel({
             </div>
 
             {/* Footer actions */}
-            <div style={{ padding: '12px 16px', borderTop: '1px solid #F1F5F9', display: 'flex', gap: 8, flexShrink: 0 }}>
+            <div style={{ padding: '12px 16px', borderTop: '1px solid #F1F5F9', display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
               <button onClick={() => onDelivery(student)} style={footerBtn}>📦 Entregar</button>
               {student.balance > 0 && <button onClick={() => onReturn(student)} style={footerBtn}>↩ Devolver</button>}
               <button onClick={() => onPayment(student)} style={footerBtn}>💰 Pagar</button>
               <button onClick={() => onNote(student)} style={footerBtn}>📝 Nota</button>
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/familia/${student.code}`
+                  navigator.clipboard.writeText(url).catch(() => {})
+                }}
+                title="Copiar link da família"
+                style={footerBtn}
+              >
+                🔗 Link
+              </button>
             </div>
           </>
         )}
@@ -565,10 +643,11 @@ function ReturnModal({ student, onClose, onSuccess }: { student: Student; onClos
 // ─── PaymentModal ─────────────────────────────────────────────────────────────
 
 function PaymentModal({ student, onClose, onSuccess }: { student: Student; onClose: () => void; onSuccess: () => void }) {
-  const [amountStr, setAmount] = useState('')
-  const [note, setNote]        = useState('')
-  const [loading, setLoading]  = useState(false)
-  const [error, setError]      = useState('')
+  const [amountStr, setAmount]       = useState('')
+  const [paymentMethod, setMethod]   = useState('')
+  const [note, setNote]              = useState('')
+  const [loading, setLoading]        = useState(false)
+  const [error, setError]            = useState('')
 
   const parsed = parseReais(amountStr)
   const payAll = () => setAmount((student.pending / 100).toFixed(2).replace('.', ','))
@@ -581,7 +660,7 @@ function PaymentModal({ student, onClose, onSuccess }: { student: Student; onClo
       const res = await fetch('/api/admin/rifas/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: student.id, type: 'PAYMENT', amountPaid: parsed, note }),
+        body: JSON.stringify({ studentId: student.id, type: 'PAYMENT', amountPaid: parsed, paymentMethod: paymentMethod || null, note }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'Erro'); return }
@@ -608,8 +687,18 @@ function PaymentModal({ student, onClose, onSuccess }: { student: Student; onClo
           {parsed !== null && parsed > 0 && <ConfirmLine value={parsed} />}
         </div>
         <div>
+          <label style={lbl}>Forma de pagamento <span style={{ fontWeight: 400, textTransform: 'none', color: '#94A3B8' }}>(opcional)</span></label>
+          <select value={paymentMethod} onChange={(e) => setMethod(e.target.value)} style={{ ...inp, appearance: 'none' }}>
+            <option value="">Selecionar…</option>
+            <option value="pix">Pix</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="transferencia">Transferência</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+        <div>
           <label style={lbl}>Observação <span style={{ fontWeight: 400, textTransform: 'none', color: '#94A3B8' }}>(opcional)</span></label>
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: via Pix" style={inp} />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex: entregou na portaria" style={inp} />
         </div>
         {error && <ErrorMsg msg={error} />}
         <button type="submit" disabled={loading} style={{ padding: '12px 20px', borderRadius: 10, border: 'none', background: loading ? '#CBD5E1' : '#16A34A', color: '#fff', fontWeight: 700, fontSize: 14, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}>
@@ -906,6 +995,7 @@ export function RaffleClient({ students: initial }: { students: Student[] }) {
     <>
       <MetricRow students={students} />
       <RankingSection students={students} onOpen={setDrawer} />
+      <ClassroomRankingSection students={students} />
 
       {/* Toolbar */}
       <div className="adm-toolbar" style={{ marginBottom: 16 }}>

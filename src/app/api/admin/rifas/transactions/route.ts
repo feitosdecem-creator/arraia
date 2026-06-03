@@ -1,15 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { customAlphabet } from 'nanoid'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 const NEEDS_QUANTITY = ['DELIVERY', 'RETURN']
+
+const genCode = customAlphabet('0123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 6)
+
+async function generateUniqueCode(): Promise<string> {
+  for (let i = 0; i < 10; i++) {
+    const code = genCode()
+    const existing = await prisma.raffleStudent.findUnique({ where: { code } })
+    if (!existing) return code
+  }
+  throw new Error('Failed to generate unique student code')
+}
 
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.isAdmin) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await req.json()
-  const { studentId, newStudent, type, quantity, amountPaid, note } = body
+  const { studentId, newStudent, type, quantity, amountPaid, paymentMethod, note } = body
 
   const validTypes = ['DELIVERY', 'RETURN', 'PAYMENT', 'NOTE']
   if (!type || !validTypes.includes(type)) {
@@ -37,12 +49,14 @@ export async function POST(req: NextRequest) {
     if (!name?.trim() || !classroom?.trim() || !guardian?.trim()) {
       return NextResponse.json({ error: 'Dados do aluno incompletos' }, { status: 400 })
     }
+    const code = await generateUniqueCode()
     const created = await prisma.raffleStudent.create({
       data: {
         name: name.trim(),
         classroom: classroom.trim(),
         guardian: guardian.trim(),
         phone: phone?.trim() || null,
+        code,
       },
     })
     resolvedStudentId = created.id
@@ -64,12 +78,21 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Assign sequential receipt number for PAYMENT transactions
+  let receiptNumber: number | undefined
+  if (type === 'PAYMENT') {
+    const agg = await prisma.raffleTransaction.aggregate({ _max: { receiptNumber: true } })
+    receiptNumber = (agg._max.receiptNumber ?? 0) + 1
+  }
+
   const transaction = await prisma.raffleTransaction.create({
     data: {
       studentId: resolvedStudentId,
       type,
       quantity: NEEDS_QUANTITY.includes(type) ? quantity : 0,
       amountPaid: parsedAmount,
+      paymentMethod: type === 'PAYMENT' && paymentMethod ? paymentMethod.trim() : null,
+      receiptNumber,
       note: note?.trim() || null,
       createdBy: session.user.name ?? session.user.id,
     },
