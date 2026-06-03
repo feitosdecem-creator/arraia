@@ -6,7 +6,6 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-const BOOKLET_VALUE = 15000
 
 type Props = { params: Promise<{ code: string }> }
 
@@ -30,13 +29,9 @@ export default async function FamiliaPage({ params }: Props) {
 
   const txs = student.transactions
   const delivered = txs.filter((t) => t.type === 'DELIVERY').reduce((s, t) => s + t.quantity, 0)
-  const returned = txs.filter((t) => t.type === 'RETURN').reduce((s, t) => s + t.quantity, 0)
   const totalPaid = txs
     .filter((t) => t.type === 'RETURN' || t.type === 'PAYMENT')
     .reduce((s, t) => s + (t.amountPaid ?? 0), 0)
-  const expected = delivered * BOOKLET_VALUE
-  const pending = Math.max(0, expected - totalPaid)
-  const progressPct = expected > 0 ? Math.min(100, Math.round((totalPaid / expected) * 100)) : 0
 
   const publicTxs = txs.filter((t) => t.type !== 'NOTE')
 
@@ -62,23 +57,9 @@ export default async function FamiliaPage({ params }: Props) {
         {/* Metric tiles */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
           <MetricTile label="Rifas entregues" value={String(delivered * 30)} sub={`${delivered} bloquinho${delivered !== 1 ? 's' : ''}`} accent="var(--fdc-tangerine)" />
-          <MetricTile label="Valor potencial" value={fmtBRL(expected)} accent="var(--fg-3)" />
-          <MetricTile label="Total arrecadado" value={fmtBRL(totalPaid)} accent="var(--fdc-leaf)" />
-          <MetricTile label="Pendente" value={fmtBRL(pending)} accent={pending > 0 ? '#e53e3e' : 'var(--fg-3)'} />
+          <MetricTile label="Total entregue" value={fmtBRL(totalPaid)} accent="var(--fdc-leaf)" />
         </div>
 
-        {/* Progress bar */}
-        {expected > 0 && (
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-3)', letterSpacing: '-0.01em' }}>Progresso</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--fdc-leaf)' }}>{progressPct}%</span>
-            </div>
-            <div style={{ height: 8, background: 'var(--line-2)', borderRadius: 999, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${progressPct}%`, background: progressPct >= 100 ? 'var(--fdc-leaf)' : 'var(--fdc-tangerine)', borderRadius: 999, transition: 'width 0.4s ease' }} />
-            </div>
-          </div>
-        )}
 
         {/* Timeline */}
         {publicTxs.length > 0 && (
