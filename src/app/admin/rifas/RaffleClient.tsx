@@ -341,6 +341,7 @@ function DrawerPanel({
   const [quickNote, setQuickNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [noteErr, setNoteErr] = useState('')
+  const [copiedLink, setCopiedLink] = useState(false)
 
   const open = !!student
 
@@ -472,12 +473,17 @@ function DrawerPanel({
               <button
                 onClick={() => {
                   const url = `${window.location.origin}/familia/${student.code}`
-                  navigator.clipboard.writeText(url).catch(() => {})
+                  navigator.clipboard.writeText(url).then(() => {
+                    setCopiedLink(true)
+                    setTimeout(() => setCopiedLink(false), 2000)
+                  }).catch(() => {
+                    window.prompt('Copie o link:', url)
+                  })
                 }}
                 title="Copiar link da família"
-                style={footerBtn}
+                style={{ ...footerBtn, ...(copiedLink ? { background: '#f0fdf4', borderColor: '#86efac', color: '#16a34a' } : {}) }}
               >
-                🔗 Link
+                {copiedLink ? '✓ Copiado!' : '🔗 Link'}
               </button>
             </div>
           </>
