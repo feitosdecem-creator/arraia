@@ -4,6 +4,7 @@ import { generateQrCode } from '@/lib/qrcode'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,21 +17,15 @@ const METHOD_LABEL: Record<string, string> = {
   outros: 'Outros',
 }
 
-function fmtBRL(centavos: number) {
-  return (centavos / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 export default async function ReciboPagamentoPage({ params }: Props) {
   const { number } = await params
   const receiptNumber = parseInt(number, 10)
-
   if (isNaN(receiptNumber)) return notFound()
 
   const tx = await prisma.raffleTransaction.findUnique({
     where: { receiptNumber },
     include: { student: true },
   })
-
   if (!tx || tx.type !== 'PAYMENT') return notFound()
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://arraia.feitosdecem.com.br'
@@ -40,103 +35,120 @@ export default async function ReciboPagamentoPage({ params }: Props) {
   const receiptFormatted = String(receiptNumber).padStart(5, '0')
   const dateFormatted = format(tx.createdAt, "dd/MM/yyyy 'às' HH'h'mm", { locale: ptBR })
   const method = tx.paymentMethod ? (METHOD_LABEL[tx.paymentMethod] ?? tx.paymentMethod) : null
+  const amountFormatted = tx.amountPaid != null
+    ? (tx.amountPaid / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    : '—'
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 16px 80px' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '32px 16px 80px' }}>
 
-        {/* Logo + title */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <img src="/logo-navbar.svg" alt="Arraiá nu Quintal" style={{ height: 36, width: 'auto', marginBottom: 16 }} />
+        {/* Back link */}
+        <Link
+          href={`/familia/${tx.student.code}`}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--fg-3)', textDecoration: 'none', fontSize: 14, fontWeight: 500, marginBottom: 28, letterSpacing: '-0.01em' }}
+        >
+          ← Histórico da família
+        </Link>
+
+        {/* Success header */}
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          {/* Success mark circle */}
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 16px',
-            borderRadius: 999,
-            background: 'rgba(111,168,74,0.12)',
-            border: '1.5px solid rgba(111,168,74,0.3)',
-            marginBottom: 12,
+            width: 72, height: 72, borderRadius: '50%',
+            background: 'var(--fdc-leaf)',
+            display: 'grid', placeItems: 'center',
+            margin: '0 auto 16px',
+            boxShadow: '0 8px 24px rgba(111,168,74,0.35)',
           }}>
-            <span style={{ fontSize: 16 }}>✅</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fdc-leaf)', letterSpacing: '-0.01em' }}>
-              Pagamento Confirmado
-            </span>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--fdc-cream)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--fdc-ink)', margin: 0 }}>
-            Recibo #{receiptFormatted}
+          <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--fg-1)', margin: '0 0 6px' }}>
+            Pagamento confirmado
           </h1>
+          <p style={{ fontSize: 14, color: 'var(--fg-2)', margin: 0 }}>
+            Recibo <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--fg-1)' }}>#{receiptFormatted}</span>
+          </p>
         </div>
 
-        {/* Receipt card */}
+        {/* Boarding-pass card */}
         <div style={{
           background: 'var(--bg-surface)',
           borderRadius: 20,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          boxShadow: '0 18px 32px rgba(56,48,48,0.12)',
           overflow: 'hidden',
-          border: '1.5px solid var(--line-2)',
         }}>
+
           {/* Green header band */}
           <div style={{
-            background: 'linear-gradient(135deg, var(--fdc-leaf) 0%, #4a9a3a 100%)',
-            padding: '20px 24px',
+            background: 'linear-gradient(135deg, var(--fdc-leaf) 0%, #4e7e2f 100%)',
+            padding: '24px 28px',
+            position: 'relative',
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.8)', marginBottom: 4 }}>
-              Campanha de Rifas
+            <div style={{ position: 'absolute', top: 16, right: 20, opacity: 0.18 }}>
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" />
+              </svg>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: 'white', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-              {tx.amountPaid != null ? fmtBRL(tx.amountPaid) : '—'}
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.12em', color: 'rgba(253,250,245,0.75)', marginBottom: 6 }}>
+              Campanha de Rifas · Arraiá nu Quintal
+            </div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--fdc-cream)', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              {amountFormatted}
             </div>
           </div>
 
           {/* Perforation */}
           <div style={{ position: 'relative', height: 0 }}>
-            <div style={{ position: 'absolute', left: -12, top: -12, width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-page)' }} />
-            <div style={{ position: 'absolute', right: -12, top: -12, width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-page)' }} />
-            <div style={{ position: 'absolute', left: 18, right: 18, top: -1, borderTop: '1.5px dashed var(--line-2)' }} />
+            <div style={{ position: 'absolute', left: -10, top: -10, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg-page)' }} />
+            <div style={{ position: 'absolute', right: -10, top: -10, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg-page)' }} />
+            <div style={{ position: 'absolute', left: 14, right: 14, top: -1, borderTop: '1.5px dashed rgba(56,48,48,0.14)' }} />
           </div>
 
-          {/* Details */}
-          <div style={{ padding: '24px 24px 20px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              <DetailRow label="Aluno" value={tx.student.name} />
-              <DetailRow label="Turma" value={tx.student.classroom} />
-              <DetailRow label="Valor" value={tx.amountPaid != null ? fmtBRL(tx.amountPaid) : '—'} highlight />
-              {method && <DetailRow label="Método" value={method} />}
-              <DetailRow label="Data" value={dateFormatted} />
-              {tx.note && <DetailRow label="Observação" value={tx.note} />}
+          {/* Fields grid */}
+          <div style={{ padding: '28px 28px 24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px' }}>
+              <Field label="Aluno" value={tx.student.name} span />
+              <Field label="Turma" value={tx.student.classroom} />
+              <Field label="Valor" value={amountFormatted} accent />
+              {method && <Field label="Forma de pagamento" value={method} />}
+              <Field label="Data" value={dateFormatted} />
+              <Field label="Nº do recibo" value={`#${receiptFormatted}`} mono />
+              {tx.note && <Field label="Observação" value={tx.note} span />}
             </div>
           </div>
 
-          {/* QR Perforation */}
+          {/* QR perforation */}
           <div style={{ position: 'relative', height: 0 }}>
-            <div style={{ position: 'absolute', left: -12, top: -12, width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-page)' }} />
-            <div style={{ position: 'absolute', right: -12, top: -12, width: 24, height: 24, borderRadius: '50%', background: 'var(--bg-page)' }} />
-            <div style={{ position: 'absolute', left: 18, right: 18, top: -1, borderTop: '1.5px dashed var(--line-2)' }} />
+            <div style={{ position: 'absolute', left: -10, top: -10, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg-page)' }} />
+            <div style={{ position: 'absolute', right: -10, top: -10, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg-page)' }} />
+            <div style={{ position: 'absolute', left: 14, right: 14, top: -1, borderTop: '1.5px dashed rgba(56,48,48,0.14)' }} />
           </div>
 
-          {/* QR code section */}
-          <div style={{ padding: '24px 24px 28px', textAlign: 'center', background: 'var(--bg-sunken)' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)', marginBottom: 16 }}>
+          {/* QR section */}
+          <div style={{ padding: '24px 28px 32px', textAlign: 'center', background: 'var(--bg-sunken)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.12em', color: 'var(--fg-3)', marginBottom: 16 }}>
               Verificar autenticidade
             </div>
             <div style={{
               display: 'inline-block',
-              padding: 14,
+              padding: 12,
               background: 'white',
-              borderRadius: 16,
-              border: '2px solid var(--line-2)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+              borderRadius: 14,
+              border: '1px solid rgba(56,48,48,0.10)',
+              boxShadow: '0 4px 12px rgba(56,48,48,0.08)',
             }}>
-              <Image src={qrCode} alt={`QR Code recibo #${receiptFormatted}`} width={200} height={200} />
+              <Image src={qrCode} alt={`QR Code recibo #${receiptFormatted}`} width={180} height={180} />
             </div>
-            <div style={{ marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--fg-3)', letterSpacing: '0.02em', wordBreak: 'break-all' }}>
+            <div style={{ marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--fg-3)', letterSpacing: '0.01em' }}>
               {receiptUrl}
             </div>
           </div>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)', marginTop: 28, lineHeight: 1.6 }}>
+        <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--fg-3)', marginTop: 32, lineHeight: 1.6 }}>
           Dúvidas? Entre em contato com a escola.
         </p>
       </div>
@@ -144,26 +156,32 @@ export default async function ReciboPagamentoPage({ params }: Props) {
   )
 }
 
-function DetailRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Field({
+  label, value, span, accent, mono,
+}: {
+  label: string; value: string; span?: boolean; accent?: boolean; mono?: boolean
+}) {
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: 12,
-      padding: '11px 0',
-      borderBottom: '1px solid var(--line-2)',
-    }}>
-      <span style={{ fontSize: 13, color: 'var(--fg-3)', fontWeight: 500 }}>{label}</span>
-      <span style={{
-        fontSize: highlight ? 16 : 13,
-        fontWeight: highlight ? 800 : 600,
-        color: highlight ? 'var(--fdc-leaf)' : 'var(--fg-1)',
-        textAlign: 'right',
-        letterSpacing: highlight ? '-0.01em' : undefined,
+    <div style={span ? { gridColumn: '1 / -1' } : {}}>
+      <div style={{
+        fontSize: 11, fontWeight: 600,
+        textTransform: 'uppercase' as const,
+        letterSpacing: '0.08em',
+        color: 'var(--fg-3)',
+        marginBottom: 4,
+      }}>
+        {label}
+      </div>
+      <div style={{
+        fontWeight: accent ? 800 : 600,
+        fontSize: accent ? 20 : 15,
+        fontFamily: mono ? 'var(--font-mono)' : 'inherit',
+        color: accent ? 'var(--fdc-leaf-deep)' : 'var(--fg-1)',
+        letterSpacing: accent ? '-0.02em' : undefined,
+        lineHeight: 1.2,
       }}>
         {value}
-      </span>
+      </div>
     </div>
   )
 }
