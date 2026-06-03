@@ -97,9 +97,9 @@ export default async function FamiliaPage({ params }: Props) {
           {/* Metrics ledger */}
           <div style={{ padding: '14px 24px' }}>
             <LedgerRow
-              label="Rifas entregues"
-              sub={`${delivered} bloquinho${delivered !== 1 ? 's' : ''}`}
-              value={String(delivered * 30)}
+              label="Bloquinhos recebidos"
+              sub={`${delivered} bloquinho${delivered !== 1 ? 's' : ''} · ${delivered * 30} rifas`}
+              value={String(delivered)}
               valueColor="var(--fdc-ink)"
               bold
             />
@@ -179,9 +179,6 @@ export default async function FamiliaPage({ params }: Props) {
           </div>
         )}
 
-        <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--fdc-stone-1)', marginTop: 36, lineHeight: 1.6 }}>
-          — feito à mão · feitos de cem —
-        </p>
       </div>
     </div>
   )
