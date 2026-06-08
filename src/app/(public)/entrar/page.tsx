@@ -426,7 +426,7 @@ export default function EntrarPage() {
 
           {/* Card */}
           <div className="fdc-card" style={{ padding: '32px 28px' }}>
-            <Suspense fallback={<div style={{ height: 200 }} />}>
+            <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}><span className="auth-spinner" style={{ width: 28, height: 28, borderWidth: 3, borderTopColor: 'var(--fdc-tangerine)', borderColor: 'var(--line-2)' }} /></div>}>
               <LoginForm />
             </Suspense>
           </div>

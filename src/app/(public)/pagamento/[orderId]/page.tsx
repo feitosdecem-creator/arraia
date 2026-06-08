@@ -56,10 +56,9 @@ function StepBar({ step }: { step: number }) {
 }
 
 export default async function PagamentoPage({ params }: Props) {
-  const session = await auth()
-  if (!session?.user?.id) redirect('/entrar')
-
   const { orderId } = await params
+  const session = await auth()
+  if (!session?.user?.id) redirect(`/entrar?next=/pagamento/${orderId}`)
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },

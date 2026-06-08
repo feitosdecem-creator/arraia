@@ -354,7 +354,7 @@ export default function CheckoutPage() {
       })
       const data = await res.json()
       if (!res.ok) { setOrderError(data.error || 'Erro ao criar pedido'); return }
-      router.push(`/pagamento/${data.orderId}`)
+      window.location.href = `/pagamento/${data.orderId}`
     } catch {
       setOrderError('Erro ao processar pedido. Tente novamente.')
     } finally {
