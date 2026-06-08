@@ -12,6 +12,10 @@ export async function loginAction(
     return { ok: true }
   } catch (e) {
     if (e instanceof AuthError) return { ok: false }
-    throw e
+    // next-auth v5 beta may throw a NEXT_REDIRECT even with redirect:false.
+    // A redirect from credentials means auth succeeded (failed auth throws AuthError).
+    const msg = e instanceof Error ? e.message : String(e)
+    if (msg.includes('NEXT_REDIRECT')) return { ok: true }
+    return { ok: false }
   }
 }

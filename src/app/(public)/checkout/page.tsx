@@ -1,11 +1,9 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import { useCart } from '@/components/CartProvider'
-import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { loginAction } from './actions'
 
 // ─── Step bar ────────────────────────────────────────────────
 const STEPS = ['Ingressos', 'Dados', 'Pagamento', 'Confirmação']
@@ -98,8 +96,8 @@ function EmbeddedAuth() {
           return
         }
       }
-      const result = await loginAction(email.trim(), password)
-      if (!result.ok) {
+      const result = await signIn('credentials', { email: email.trim(), password, redirect: false })
+      if (result?.error) {
         setError(step === 'login' ? 'Senha incorreta. Tente novamente.' : 'Erro ao entrar. Tente novamente.')
       } else {
         await updateSession()
@@ -338,7 +336,6 @@ function OrderSummary({ items, total }: { items: ReturnType<typeof useCart>['ite
 export default function CheckoutPage() {
   const { data: session, status } = useSession()
   const { items, total, hydrated } = useCart()
-  const router = useRouter()
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
 
