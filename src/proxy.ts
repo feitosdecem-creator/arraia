@@ -4,8 +4,14 @@
 // Protected routes:
 //   /admin/*          → requires isAuthenticated + isAdmin; redirects to /entrar
 //   /meus-ingressos/* → requires isAuthenticated; redirects to /entrar with callbackUrl
-//   /pagamento/*      → requires isAuthenticated; redirects to /entrar with callbackUrl
-//   /checkout         → requires isAuthenticated; redirects to /entrar with callbackUrl
+//
+// /checkout e /pagamento NÃO são protegidos aqui de propósito:
+//   - /checkout tem login embutido na própria página para usuários deslogados
+//   - /pagamento/[orderId] é acessível por link (cuid não-adivinhável); a
+//     própria página valida posse quando há sessão de outro usuário
+//   Proteger essas rotas no edge derrubava compradores em in-app browsers
+//   (Instagram/Facebook bloqueiam cookies) num loop /entrar → página em
+//   branco → vendas perdidas.
 //
 // Second line of defense: AdminLayout (src/app/admin/layout.tsx) re-checks isAdmin.
 // Third line of defense: each API route calls auth() and checks ownership individually.
@@ -26,16 +32,10 @@ export default auth((req) => {
     if (!isAdmin) return NextResponse.redirect(new URL('/', req.url))
   }
 
-  if (!isAuthenticated) {
-    if (
-      pathname.startsWith('/meus-ingressos') ||
-      pathname.startsWith('/pagamento') ||
-      pathname.startsWith('/checkout')
-    ) {
-      const url = new URL('/entrar', req.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
-    }
+  if (!isAuthenticated && pathname.startsWith('/meus-ingressos')) {
+    const url = new URL('/entrar', req.url)
+    url.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()
@@ -45,7 +45,5 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/meus-ingressos/:path*',
-    '/pagamento/:path*',
-    '/checkout',
   ],
 }
