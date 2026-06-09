@@ -2,8 +2,19 @@
 
 import { useSession, signIn } from 'next-auth/react'
 import { useCart } from '@/components/CartProvider'
-import { useState, useRef } from 'react'
+import { useState, useRef, useSyncExternalStore } from 'react'
 import Link from 'next/link'
+
+// In-app browsers (Instagram, Facebook, Messenger) bloqueiam cookies e
+// quebram o login — detectamos para avisar o comprador a abrir no navegador.
+const noopSubscribe = () => () => {}
+function useInAppBrowser() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => /Instagram|FBAN|FBAV|FB_IAB|Messenger/i.test(navigator.userAgent),
+    () => false,
+  )
+}
 
 // ─── Step bar ────────────────────────────────────────────────
 const STEPS = ['Ingressos', 'Dados', 'Pagamento', 'Confirmação']
@@ -334,10 +345,11 @@ function OrderSummary({ items, total }: { items: ReturnType<typeof useCart>['ite
 
 // ─── Main checkout page ───────────────────────────────────────
 export default function CheckoutPage() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update: updateSession } = useSession()
   const { items, total, hydrated } = useCart()
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
+  const inAppBrowser = useInAppBrowser()
 
   const handleOrder = async () => {
     if (items.length === 0) return
@@ -350,6 +362,14 @@ export default function CheckoutPage() {
         body: JSON.stringify({ items: items.map((i) => ({ ticketTypeId: i.ticketTypeId, quantity: i.quantity })) }),
       })
       const data = await res.json()
+      if (res.status === 401) {
+        // Sessão caiu entre o login e o pedido (comum em in-app browsers).
+        // Refaz o fetch da sessão: o status volta a 'unauthenticated' e o
+        // formulário de login reaparece no lugar de uma tela quebrada.
+        setOrderError('Sua sessão expirou. Entre novamente abaixo para continuar.')
+        await updateSession()
+        return
+      }
       if (!res.ok) { setOrderError(data.error || 'Erro ao criar pedido'); return }
       window.location.href = `/pagamento/${data.orderId}`
     } catch {
@@ -392,6 +412,18 @@ export default function CheckoutPage() {
         <div style={{ marginBottom: 28 }}>
           <StepBar step={1} />
         </div>
+
+        {/* In-app browser warning */}
+        {inAppBrowser && (
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '14px 16px', background: 'rgba(240,165,0,0.10)', border: '1px solid rgba(240,165,0,0.35)', borderRadius: 'var(--radius-md)', marginBottom: 24 }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>⚠️</span>
+            <div style={{ fontSize: 13.5, color: 'var(--fg-1)', lineHeight: 1.5 }}>
+              <strong>Você está no navegador do Instagram/Facebook.</strong> Ele pode bloquear o login e travar a compra.
+              Toque nos <strong>três pontinhos (⋯)</strong> no canto da tela e escolha{' '}
+              <strong>&ldquo;Abrir no navegador&rdquo;</strong> para continuar sem problemas.
+            </div>
+          </div>
+        )}
 
         <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', gap: 36, alignItems: 'start' }}>
 

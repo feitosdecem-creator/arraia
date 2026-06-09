@@ -57,8 +57,6 @@ function StepBar({ step }: { step: number }) {
 
 export default async function PagamentoPage({ params }: Props) {
   const { orderId } = await params
-  const session = await auth()
-  if (!session?.user?.id) redirect(`/entrar?next=/pagamento/${orderId}`)
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -66,8 +64,13 @@ export default async function PagamentoPage({ params }: Props) {
 
   if (!order) return notFound()
 
-  // Verifica que o pedido pertence ao usuário logado (ou é admin)
-  if (order.userId !== session.user.id && !session.user.isAdmin) {
+  // Quem tem o link (cuid não-adivinhável) pode ver e pagar o pedido.
+  // Não exigimos login aqui: in-app browsers (Instagram/Facebook) bloqueiam
+  // cookies e a sessão se perdia entre o checkout e esta página, mandando o
+  // comprador para uma tela em branco. Só bloqueia se OUTRO usuário logado
+  // tentar abrir o pedido de alguém.
+  const session = await auth()
+  if (session?.user?.id && order.userId !== session.user.id && !session.user.isAdmin) {
     redirect('/meus-ingressos')
   }
 

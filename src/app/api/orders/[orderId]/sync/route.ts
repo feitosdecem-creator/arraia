@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { nanoid } from 'nanoid'
 import { sendTicketEmail } from '@/lib/email'
+import { rateLimitIp } from '@/lib/ratelimit'
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
@@ -11,11 +11,14 @@ const client = new MercadoPagoConfig({
 
 type Props = { params: Promise<{ orderId: string }> }
 
-export async function POST(_req: NextRequest, { params }: Props) {
+// Público: quem tem o link do pedido pode pedir a re-verificação do pagamento.
+// Exigir sessão quebrava o botão "Já paguei" em in-app browsers que bloqueiam
+// cookies. A operação é idempotente e só confirma o que o Mercado Pago disser.
+export async function POST(req: NextRequest, { params }: Props) {
   try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const { allowed } = rateLimitIp(req, 'order-sync', 10, 10 * 60_000)
+    if (!allowed) {
+      return NextResponse.json({ error: 'Muitas tentativas. Aguarde alguns minutos.' }, { status: 429 })
     }
 
     const { orderId } = await params
@@ -27,10 +30,6 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     if (!order) {
       return NextResponse.json({ error: 'Pedido não encontrado' }, { status: 404 })
-    }
-
-    if (order.userId !== session.user.id && !session.user.isAdmin) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
     }
 
     if (order.status === 'PAID') {

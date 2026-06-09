@@ -1,9 +1,20 @@
 'use client'
 
 import { useSession, signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useRef, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useState, useRef, useEffect, useSyncExternalStore, Suspense } from 'react'
 import Link from 'next/link'
+
+// In-app browsers (Instagram, Facebook, Messenger) bloqueiam cookies e
+// quebram o login — detectamos para avisar o usuário a abrir no navegador.
+const noopSubscribe = () => () => {}
+function useInAppBrowser() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => /Instagram|FBAN|FBAV|FB_IAB|Messenger/i.test(navigator.userAgent),
+    () => false,
+  )
+}
 
 function GoogleIcon() {
   return (
@@ -109,7 +120,6 @@ function Field({
 
 function LoginForm() {
   const { status, data: session } = useSession()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('callbackUrl') || searchParams.get('next') || '/meus-ingressos'
 
@@ -121,6 +131,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
+  const inAppBrowser = useInAppBrowser()
 
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -128,10 +139,13 @@ function LoginForm() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      // Admins always go to /admin to avoid loops with /meus-ingressos
-      router.replace(session?.user?.isAdmin ? '/admin' : next)
+      // Admins always go to /admin to avoid loops with /meus-ingressos.
+      // Full HTTP navigation (not router.replace): garante que o cookie de
+      // sessão recém-criado acompanha a requisição — soft navigation via RSC
+      // podia chegar ao servidor sem o cookie e voltar para cá em loop.
+      window.location.replace(session?.user?.isAdmin ? '/admin' : next)
     }
-  }, [status, router, next, session])
+  }, [status, next, session])
 
   const isEmailValid = email.includes('@') && email.includes('.')
 
@@ -214,6 +228,15 @@ function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
+      {inAppBrowser && (
+        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px', background: 'rgba(240,165,0,0.10)', border: '1px solid rgba(240,165,0,0.35)', borderRadius: 12, marginBottom: 18 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+          <div style={{ fontSize: 13, color: 'var(--fg-1)', lineHeight: 1.5 }}>
+            <strong>Você está no navegador do Instagram/Facebook.</strong> Ele pode bloquear o login.
+            Toque nos <strong>três pontinhos (⋯)</strong> e escolha <strong>&ldquo;Abrir no navegador&rdquo;</strong>.
+          </div>
+        </div>
+      )}
       <h1 style={{
         fontFamily: 'var(--font-display)',
         fontSize: 26,
