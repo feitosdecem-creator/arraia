@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import type { PurchaseCategory } from '@prisma/client'
+import { CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/purchases'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,14 +34,15 @@ function MetricCard({ label, value, sub, accent }: { label: string; value: strin
 type Movement = {
   id: string
   date: Date
-  source: 'Ingressos' | 'Rifas'
+  source: 'Ingressos' | 'Rifas' | 'Compras'
   description: string
   method: string | null
   amount: number
+  kind: 'income' | 'expense'
 }
 
 export default async function FinanceiroPage() {
-  const [ticketRevenue, paidOrdersCount, rafflePayments, raffleReturns, recentOrders] = await Promise.all([
+  const [ticketRevenue, paidOrdersCount, rafflePayments, raffleReturns, recentOrders, purchases] = await Promise.all([
     prisma.order.aggregate({ where: { status: 'PAID' }, _sum: { totalAmount: true } }),
     prisma.order.count({ where: { status: 'PAID' } }),
     prisma.raffleTransaction.findMany({
@@ -58,11 +61,26 @@ export default async function FinanceiroPage() {
       orderBy: { paidAt: 'desc' },
       take: 8,
     }),
+    prisma.purchaseItem.findMany({
+      where: { status: { in: ['COMPRADO', 'RECEBIDO'] }, paidValue: { not: null } },
+      orderBy: { purchaseDate: 'desc' },
+    }),
   ])
 
   const ticketTotal = ticketRevenue._sum.totalAmount ?? 0
   const raffleTotal = [...rafflePayments, ...raffleReturns].reduce((s, t) => s + (t.amountPaid ?? 0), 0)
   const grandTotal = ticketTotal + raffleTotal
+  const expensesTotal = purchases.reduce((s, p) => s + (p.paidValue ?? 0), 0)
+  const saldo = grandTotal - expensesTotal
+
+  // Breakdown of expenses by category
+  const categoryTotals = new Map<PurchaseCategory, number>()
+  for (const p of purchases) {
+    categoryTotals.set(p.category, (categoryTotals.get(p.category) ?? 0) + (p.paidValue ?? 0))
+  }
+  const categoryBreakdown = [...categoryTotals.entries()]
+    .map(([category, total]) => ({ category, label: CATEGORY_LABELS[category], icon: CATEGORY_ICONS[category], total }))
+    .sort((a, b) => b.total - a.total)
 
   // Breakdown by payment method (rifas)
   const methodTotals = new Map<string, number>()
@@ -83,6 +101,7 @@ export default async function FinanceiroPage() {
       description: o.user.name,
       method: 'PIX',
       amount: o.totalAmount,
+      kind: 'income',
     })),
     ...rafflePayments.slice(0, 8).map((t): Movement => ({
       id: t.id,
@@ -91,6 +110,7 @@ export default async function FinanceiroPage() {
       description: `Pagamento — ${t.student.name}`,
       method: t.paymentMethod ? (METHOD_LABEL[t.paymentMethod] ?? t.paymentMethod) : null,
       amount: t.amountPaid ?? 0,
+      kind: 'income',
     })),
     ...raffleReturns.slice(0, 8).map((t): Movement => ({
       id: t.id,
@@ -99,6 +119,16 @@ export default async function FinanceiroPage() {
       description: `Devolução com pagamento — ${t.student.name}`,
       method: t.paymentMethod ? (METHOD_LABEL[t.paymentMethod] ?? t.paymentMethod) : null,
       amount: t.amountPaid ?? 0,
+      kind: 'income',
+    })),
+    ...purchases.slice(0, 8).map((p): Movement => ({
+      id: p.id,
+      date: p.purchaseDate ?? p.updatedAt,
+      source: 'Compras',
+      description: p.name,
+      method: p.paymentMethod ? (METHOD_LABEL[p.paymentMethod] ?? p.paymentMethod) : null,
+      amount: p.paidValue ?? 0,
+      kind: 'expense',
     })),
   ]
     .sort((a, b) => b.date.getTime() - a.date.getTime())
@@ -124,6 +154,8 @@ export default async function FinanceiroPage() {
         <MetricCard label="Receita total" value={fmtBRL(grandTotal)} sub="Ingressos + rifas" accent="var(--fdc-tangerine)" />
         <MetricCard label="Ingressos" value={fmtBRL(ticketTotal)} sub={`${paidOrdersCount} pedido${paidOrdersCount !== 1 ? 's' : ''} pago${paidOrdersCount !== 1 ? 's' : ''}`} />
         <MetricCard label="Rifas" value={fmtBRL(raffleTotal)} sub={`${rafflePayments.length + raffleReturns.length} pagamento${(rafflePayments.length + raffleReturns.length) !== 1 ? 's' : ''}`} accent="var(--fdc-leaf-deep)" />
+        <MetricCard label="Despesas" value={fmtBRL(expensesTotal)} sub={`${purchases.length} compra${purchases.length !== 1 ? 's' : ''} registrada${purchases.length !== 1 ? 's' : ''}`} accent="#C2410C" />
+        <MetricCard label="Saldo" value={fmtBRL(saldo)} sub="Receita − despesas" accent={saldo >= 0 ? 'var(--fdc-leaf-deep)' : '#C2410C'} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 18, alignItems: 'start' }} className="fin-grid">
@@ -140,29 +172,34 @@ export default async function FinanceiroPage() {
                 Nenhuma movimentação registrada ainda.
               </div>
             )}
-            {movements.map((m) => (
-              <div key={`${m.source}-${m.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 24px', borderTop: '1px solid rgba(56,48,48,0.06)' }}>
-                <div style={{
-                  width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                  display: 'grid', placeItems: 'center', fontSize: 15,
-                  background: m.source === 'Ingressos' ? 'rgba(54,88,211,0.10)' : 'rgba(111,168,74,0.13)',
-                  color: m.source === 'Ingressos' ? 'var(--fdc-indigo)' : 'var(--fdc-leaf-deep)',
-                }}>
-                  {m.source === 'Ingressos' ? '🎟' : '🎫'}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {m.description}
+            {movements.map((m) => {
+              const icon = m.source === 'Ingressos' ? '🎟' : m.source === 'Rifas' ? '🎫' : '🛒'
+              const bg = m.kind === 'expense' ? 'rgba(194,65,12,0.10)' : m.source === 'Ingressos' ? 'rgba(54,88,211,0.10)' : 'rgba(111,168,74,0.13)'
+              const fg = m.kind === 'expense' ? '#C2410C' : m.source === 'Ingressos' ? 'var(--fdc-indigo)' : 'var(--fdc-leaf-deep)'
+              return (
+                <div key={`${m.source}-${m.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 24px', borderTop: '1px solid rgba(56,48,48,0.06)' }}>
+                  <div style={{
+                    width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+                    display: 'grid', placeItems: 'center', fontSize: 15,
+                    background: bg,
+                    color: fg,
+                  }}>
+                    {icon}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>
-                    {m.source}{m.method ? ` · ${m.method}` : ''} · {format(m.date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {m.description}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 1 }}>
+                      {m.source}{m.method ? ` · ${m.method}` : ''} · {format(m.date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: fg, flexShrink: 0 }}>
+                    {m.kind === 'expense' ? '−' : '+'} {fmtBRL(m.amount)}
                   </div>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--fdc-leaf-deep)', flexShrink: 0 }}>
-                  + {fmtBRL(m.amount)}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -202,6 +239,32 @@ export default async function FinanceiroPage() {
                     </div>
                     <div style={{ height: 7, borderRadius: 999, background: 'rgba(56,48,48,0.07)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, background: 'var(--fdc-tangerine)', borderRadius: 999 }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Expense breakdown by category */}
+          <div style={{ background: '#ffffff', borderRadius: 20, boxShadow: 'var(--adm-card-shadow)', padding: 24 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, letterSpacing: '-0.01em', margin: '0 0 16px', color: 'var(--fdc-ink)' }}>
+              Despesas por categoria
+            </h3>
+            {categoryBreakdown.length === 0 && (
+              <div style={{ fontSize: 13, color: 'var(--fg-3)' }}>Nenhuma compra registrada ainda.</div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {categoryBreakdown.map((c) => {
+                const pct = expensesTotal > 0 ? Math.round((c.total / expensesTotal) * 100) : 0
+                return (
+                  <div key={c.category}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 5 }}>
+                      <span style={{ fontWeight: 600, color: 'var(--fg-1)' }}>{c.icon} {c.label}</span>
+                      <span style={{ color: 'var(--fg-3)' }}>{fmtBRL(c.total)} · {pct}%</span>
+                    </div>
+                    <div style={{ height: 7, borderRadius: 999, background: 'rgba(56,48,48,0.07)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: '#C2410C', borderRadius: 999 }} />
                     </div>
                   </div>
                 )

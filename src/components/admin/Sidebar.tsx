@@ -71,6 +71,16 @@ function IconScan() {
   )
 }
 
+function IconCart() {
+  return (
+    <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6.5" cy="15.5" r="1"/>
+      <circle cx="13" cy="15.5" r="1"/>
+      <path d="M1.5 1.5h2l1.8 9.4a1.5 1.5 0 0 0 1.48 1.23h6.4a1.5 1.5 0 0 0 1.47-1.18L16 5H4.2"/>
+    </svg>
+  )
+}
+
 function IconChart() {
   return (
     <svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -107,6 +117,7 @@ const links = [
   { href: '/admin/ingressos',     label: 'Ingressos emitidos', Icon: IconTicket   },
   { href: '/admin/participantes', label: 'Participantes',      Icon: IconUsers    },
   { href: '/admin/rifas',         label: 'Rifas',              Icon: IconRaffle   },
+  { href: '/admin/compras',       label: 'Compras',            Icon: IconCart     },
   { href: '/admin/validar',       label: 'Validar entrada',    Icon: IconScan     },
   { href: '/admin/financeiro',    label: 'Financeiro',         Icon: IconChart    },
   { href: '/admin/configuracoes', label: 'Configurações',      Icon: IconSettings },

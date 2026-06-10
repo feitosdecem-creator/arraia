@@ -154,3 +154,54 @@ model RaffleTransaction {
 
   @@map("raffle_transactions")
 }
+
+enum PurchaseCategory {
+  ALIMENTACAO
+  BEBIDAS
+  DECORACAO
+  BRINCADEIRAS
+  ESTRUTURA
+  LIMPEZA
+  OUTROS
+}
+
+enum PurchaseStatus {
+  PLANEJADO
+  EM_COTACAO
+  COMPRADO
+  RECEBIDO
+  CANCELADO
+}
+
+model PurchaseItem {
+  id            String                 @id @default(cuid())
+  name          String
+  category      PurchaseCategory       @default(OUTROS)
+  quantity      Float                  @default(1)
+  unit          String                 @default("un")
+  expectedValue Int                    @default(0)
+  paidValue     Int?
+  responsavel   String
+  observacao    String?
+  status        PurchaseStatus         @default(PLANEJADO)
+  fornecedor    String?
+  purchaseDate  DateTime?
+  paymentMethod String?
+  receiptUrl    String?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  history       PurchaseHistoryEntry[]
+
+  @@map("purchase_items")
+}
+
+model PurchaseHistoryEntry {
+  id          String       @id @default(cuid())
+  itemId      String
+  description String
+  createdBy   String
+  createdAt   DateTime     @default(now())
+  item        PurchaseItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_history_entries")
+}
