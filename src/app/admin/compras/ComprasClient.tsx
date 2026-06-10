@@ -901,30 +901,51 @@ export function ComprasClient({ items: initial }: { items: Item[] }) {
       <MetricRow items={items} />
 
       {/* Toolbar */}
-      <div className="adm-toolbar" style={{ marginBottom: 16 }}>
-        <input
-          placeholder="Buscar por item ou responsável…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ ...inp, width: 220, flexShrink: 0 }}
-        />
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value as PurchaseCategory | 'all')} style={{ ...inp, appearance: 'none', width: 'auto', flexShrink: 0 }}>
-          <option value="all">Todas categorias</option>
-          {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{CATEGORY_ICONS[c]} {CATEGORY_LABELS[c]}</option>)}
-        </select>
-        <select value={responsavelFilter} onChange={(e) => setResponsavelFilter(e.target.value)} style={{ ...inp, appearance: 'none', width: 'auto', flexShrink: 0 }}>
-          <option value="all">Todos responsáveis</option>
-          {responsaveis.map((r) => <option key={r} value={r}>{r}</option>)}
-        </select>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
-          {STATUS_FILTER_CHIPS.map(chip)}
-        </div>
-        <div className="adm-toolbar-actions" style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setModal({ type: 'new' })} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, border: 'none', background: 'var(--fdc-tangerine)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+      <div className="compras-toolbar" style={{ marginBottom: 16 }}>
+        <div className="compras-toolbar-row">
+          <input
+            placeholder="Buscar por item ou responsável…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="compras-search"
+            style={{ ...inp, width: 220, flexShrink: 0 }}
+          />
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value as PurchaseCategory | 'all')} className="compras-select" style={{ ...inp, appearance: 'none', width: 'auto', flexShrink: 0 }}>
+            <option value="all">Todas categorias</option>
+            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{CATEGORY_ICONS[c]} {CATEGORY_LABELS[c]}</option>)}
+          </select>
+          <select value={responsavelFilter} onChange={(e) => setResponsavelFilter(e.target.value)} className="compras-select" style={{ ...inp, appearance: 'none', width: 'auto', flexShrink: 0 }}>
+            <option value="all">Todos responsáveis</option>
+            {responsaveis.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <button onClick={() => setModal({ type: 'new' })} className="compras-new-btn" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 20px', borderRadius: 9, border: 'none', background: 'var(--fdc-tangerine)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>
             + Novo item
           </button>
         </div>
+        <div className="compras-chips">
+          {STATUS_FILTER_CHIPS.map(chip)}
+        </div>
       </div>
+
+      <style>{`
+        .compras-toolbar { display: flex; flex-direction: column; gap: 10px; }
+        .compras-toolbar-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .compras-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        @media (max-width: 768px) {
+          .compras-search { width: 100% !important; flex: 1 1 100% !important; }
+          .compras-select { flex: 1 1 0 !important; min-width: 0 !important; width: auto !important; }
+          .compras-new-btn { flex: 1 1 100% !important; }
+          .compras-chips {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+          }
+          .compras-chips::-webkit-scrollbar { display: none; }
+          .compras-chips > button { flex-shrink: 0; }
+        }
+      `}</style>
 
       <ItemCardList items={filtered} onOpen={openDrawer} />
 
